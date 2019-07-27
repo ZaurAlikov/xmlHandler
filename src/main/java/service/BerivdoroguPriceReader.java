@@ -30,6 +30,7 @@ public class BerivdoroguPriceReader implements PriceReader {
                 price.setRetailPrice(new BigDecimal(Double.parseDouble(nextLine[5])));
                 price.setStatus(Integer.parseInt(nextLine[12]) == 1);
                 price.setModel(nextLine[2]);
+                price.setQuantity(nextLine[6]);
                 priceList.add(price);
             }
         }

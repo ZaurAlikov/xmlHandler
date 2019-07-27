@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 public class BerivdoroguProducts extends PriceImpl implements Price {
 
     private String model;
+    private String quantity;
     private boolean status;
     private BigDecimal oldRetailPrice;
     private boolean presentInPrice = false;
@@ -15,6 +16,14 @@ public class BerivdoroguProducts extends PriceImpl implements Price {
 
     public void setModel(String model) {
         this.model = model;
+    }
+
+    public String getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(String quantity) {
+        this.quantity = quantity;
     }
 
     public boolean isStatus() {

@@ -2,7 +2,7 @@ package model;
 
 import java.math.BigDecimal;
 
-public class ATuningPrice {
+public class PriceImpl implements Price {
     private String productCategory;
     private String productSubCategory;
     private String productName;

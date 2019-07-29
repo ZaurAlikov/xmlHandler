@@ -1,11 +1,14 @@
+import com.opencsv.CSVWriter;
 import model.BerivdoroguProducts;
 import model.PriceImpl;
 import service.ATPriceReader;
 import service.BerivdoroguPriceReader;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
 
 public class Main {
 
@@ -19,8 +22,17 @@ public class Main {
         List<BerivdoroguProducts> bdPriceList = berivdoroguPriceReader.readPrice(BDPricePath);
 
         List<BerivdoroguProducts> updatedBdProducts = updateBdProducts(atPriceList, bdPriceList);
-        List<PriceImpl> atMissingProducts = getMissingProducts(atPriceList, bdPriceList);
         disablingItems(bdPriceList);
+        printBdCsv(updatedBdProducts);
+
+        List<PriceImpl> atMissingProducts = getMissingProducts(atPriceList, bdPriceList);
+
+        List<BerivdoroguProducts> bdp = new ArrayList<>();
+        for (BerivdoroguProducts updatedBdProduct : updatedBdProducts) {
+            if (updatedBdProduct.getOldRetailPrice() != null) {
+                bdp.add(updatedBdProduct);
+            }
+        }
 
         System.out.println("2341234");
     }
@@ -46,11 +58,11 @@ public class Main {
         bdPriceList.forEach((myProd) -> {
             for (PriceImpl spl : supplierPriceList) {
                 if (spl.getSKU().equals(myProd.getSKU())) {
-                    if (spl.getRetailPrice().compareTo(myProd.getRetailPrice()) != 0) {
+                    if (spl.getRetailPrice().compareTo(myProd.getRetailPrice()) != 0 && !Objects.equals(spl.getRetailPrice(), BigDecimal.ZERO)) {
                         myProd.setOldRetailPrice(myProd.getRetailPrice());
                         myProd.setRetailPrice(spl.getRetailPrice());
                         myProd.setStatus(true);
-                        myProd.setQuantity("20");
+                        myProd.setQuantity(20);
                     }
                     myProd.setPresentInPrice(true);
                     break;
@@ -63,8 +75,23 @@ public class Main {
     private static void disablingItems(List<BerivdoroguProducts> bdPriceList) {
         for (BerivdoroguProducts bdProd : bdPriceList) {
             if (!bdProd.isPresentInPrice()) {
-                bdProd.setQuantity("0");
+                bdProd.setQuantity(0);
             }
         }
+    }
+
+    private static void printBdCsv(List<BerivdoroguProducts> bdProducts) throws IOException {
+        String currentDate = String.valueOf(new Date().getTime());
+        File file = new File("C:\\Users\\Admin\\Downloads\\product_import_" + currentDate + ".csv");
+        FileWriter outputfile = new FileWriter(file);
+        CSVWriter writer = new CSVWriter(outputfile, ';', '"');
+//        String[] header = { "_CATEGORY_", "_NAME_", "_MODEL_", "_SKU_", "_MANUFACTURER_", "_PRICE_", "_QUANTITY_", "_META_TITLE_", "_META_DESCRIPTION_", "_DESCRIPTION_", "_IMAGE_", "_SORT_ORDER_",	"_STATUS_",	"_SEO_KEYWORD_", "_ATTRIBUTES_", "_IMAGES_" };
+        String[] header = { "_NAME_", "_MODEL_", "_SKU_", "_PRICE_", "_QUANTITY_", "_STATUS_" };
+        writer.writeNext(header);
+        for (BerivdoroguProducts bdProduct : bdProducts) {
+            String[] data = { bdProduct.getProductName(),  bdProduct.getModel(), bdProduct.getSKU(), bdProduct.getRetailPrice().toString(), String.valueOf(bdProduct.getQuantity()), String.valueOf(bdProduct.isStatus() ? 1 : 0) };
+            writer.writeNext(data);
+        }
+        writer.close();
     }
 }

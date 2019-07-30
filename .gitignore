@@ -6,3 +6,5 @@
 # Maven
 log/
 target/
+
+src/main/resources/credentials.json

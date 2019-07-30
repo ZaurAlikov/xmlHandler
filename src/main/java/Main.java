@@ -1,6 +1,7 @@
 import com.opencsv.CSVWriter;
 import model.BerivdoroguProducts;
 import model.PriceImpl;
+import model.VendorCode;
 import service.ATPriceReader;
 import service.BerivdoroguPriceReader;
 
@@ -25,7 +26,7 @@ public class Main {
         disablingItems(bdPriceList);
         printBdCsv(updatedBdProducts);
 
-        List<PriceImpl> atMissingProducts = getMissingProducts(atPriceList, bdPriceList);
+        List<PriceImpl> atMissingProducts = getMissingProducts(VendorCode.ATUNING, atPriceList, bdPriceList);
 
         List<BerivdoroguProducts> bdp = new ArrayList<>();
         for (BerivdoroguProducts updatedBdProduct : updatedBdProducts) {
@@ -37,12 +38,12 @@ public class Main {
         System.out.println("2341234");
     }
 
-    private static List<PriceImpl> getMissingProducts(List<PriceImpl> supplierPriceList, List<BerivdoroguProducts> bdPriceList) {
+    private static List<PriceImpl> getMissingProducts(VendorCode vendorCode, List<PriceImpl> supplierPriceList, List<BerivdoroguProducts> bdPriceList) {
         List<PriceImpl> missingProducts = new ArrayList<>();
         supplierPriceList.forEach((atProd) -> {
             boolean flag = false;
             for (BerivdoroguProducts bdProd : bdPriceList) {
-                if (bdProd.getModel().substring(0,2).equals("04") && atProd.getSKU().equals(bdProd.getSKU())) {
+                if (bdProd.getModel().substring(0,2).equals(vendorCode.getCode()) && atProd.getSKU().equals(bdProd.getSKU())) {
                     flag = true;
                     break;
                 }

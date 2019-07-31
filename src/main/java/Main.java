@@ -10,7 +10,7 @@ import java.util.Map;
 public class Main {
 
     public static void main(String[] args) throws IOException, GeneralSecurityException, MessagingException {
-        Map<String, String> email = GMailService.getEmail("is:unread label:inbox", Arrays.asList(GMailLabels.DELIVERY, GMailLabels.INBOX), 10L);
+        Map<String, String> email = GMailService.getEmail("is:unread label:Доставка", Arrays.asList(GMailLabels.DELIVERY, GMailLabels.INBOX), 10L); //Label_4418826869810109691  inbox
         MainReader reader = new MainReader();
         reader.read();
     }

@@ -22,6 +22,7 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -82,7 +83,7 @@ public class GMailService {
                 .messages()
                 .list(ME)
 //                .setLabelIds(labelIds)
-//                .setQ(q)                          // Фильтр - "is:unread label:inbox"   "label:inbox label:closed"  "label:inbox label:pending"
+                .setQ(q)                          // Фильтр - "is:unread label:inbox"   "label:inbox label:closed"  "label:inbox label:pending"
                 .setMaxResults(maxResults)
                 .execute();
         List<Message> messages = openMessages.getMessages();
@@ -96,7 +97,7 @@ public class GMailService {
         return ticketDetails;
     }
 
-    private static Map getBareGmailMessageDetails(String messageId, Gmail service) throws MessagingException {
+    private static Map getBareGmailMessageDetails(String messageId, Gmail service) throws MessagingException, GeneralSecurityException {
         Map<String, Object> messageDetails = new HashMap<>();
         try {
             Message message = service.users().messages().get(ME, messageId).setFormat("full")
@@ -113,6 +114,7 @@ public class GMailService {
             messageDetails.put("threadId", message.getThreadId());
             messageDetails.put("id", message.getId());
             messageDetails.put("body", getMailBody(message));
+            getAttachments(service, ME, messageId);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -127,7 +129,10 @@ public class GMailService {
         if (message.getPayload().getMimeType().contains("multipart")) {
             List<MessagePart> parts = message.getPayload().getParts();
             for (MessagePart part : parts) {
-                undecodeData.append(part.getBody().getData());
+                String data = part.getBody().getData();
+                if (data != null) {
+                    undecodeData.append(data);
+                }
             }
             decodedData = decodeData(undecodeData.toString());
         } else {
@@ -140,6 +145,28 @@ public class GMailService {
         }
         return "";
     }
+
+    private static void getAttachments(Gmail service, String userId, String messageId)
+            throws IOException {
+        Message message = service.users().messages().get(userId, messageId).execute();
+        List<MessagePart> parts = message.getPayload().getParts();
+        for (MessagePart part : parts) {
+            if (part.getFilename() != null && part.getFilename().length() > 0) {
+                String filename = part.getFilename();
+                String attId = part.getBody().getAttachmentId();
+                MessagePartBody attachPart = service.users().messages().attachments().
+                        get(userId, messageId, attId).execute();
+
+                Base64 base64Url = new Base64(true);
+                byte[] fileByteArray = base64Url.decodeBase64(attachPart.getData());
+                FileOutputStream fileOutFile =
+                        new FileOutputStream("E:\\Java\\JavaProgs\\xmlHandler\\src\\main\\resources\\" + filename);
+                fileOutFile.write(fileByteArray);
+                fileOutFile.close();
+            }
+        }
+    }
+
 
     private static byte[] decodeData(String data) {
         org.apache.commons.codec.binary.Base64 base64Url = new Base64(true);

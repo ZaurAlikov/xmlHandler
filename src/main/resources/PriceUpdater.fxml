@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.PriceUpdaterController">
+   <children>
+      <FlowPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="51.0" prefWidth="600.0">
+         <children>
+            <Button fx:id="fileChooserBtn" mnemonicParsing="false" onAction="#fileChooser" text="Button">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </Button>
+         </children>
+      </FlowPane>
+      <FlowPane prefHeight="264.0" prefWidth="600.0">
+         <children>
+            <TextArea fx:id="fileChooserTxtArea" prefHeight="200.0" prefWidth="200.0" />
+         </children>
+      </FlowPane>
+   </children>
+</VBox>

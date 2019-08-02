@@ -22,7 +22,6 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,6 +32,7 @@ public class GMailService {
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
     private static final String ME = "me";
+    private static final String ATTACHMENTS_DIR_PATH = "/home/user/projects/xmlHandler/src/main/resources/";
 
     /**
      * Global instance of the scopes required by this quickstart.
@@ -40,6 +40,16 @@ public class GMailService {
      */
     private static final List<String> SCOPES = Arrays.asList(GmailScopes.GMAIL_LABELS, GmailScopes.GMAIL_READONLY);
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
+
+    private static Gmail service = null;
+
+    static {
+        try {
+            service = getGMailService();
+        } catch (GeneralSecurityException | IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Creates an authorized Credential object.
@@ -74,15 +84,28 @@ public class GMailService {
                 .build();
     }
 
-    public static Map<String, String> getEmail(String q, List<GMailLabels> labels, long maxResults) throws GeneralSecurityException, IOException, MessagingException {
-        List<String> labelIds = getLabelIds(labels);
-        JSONObject ticketDetails = new JSONObject();
-        Gmail service = getGMailService();
+    public static void downloadAttacmentsOnly(String q, long maxResults) throws IOException {
         ListMessagesResponse openMessages = service.
                 users()
                 .messages()
                 .list(ME)
-//                .setLabelIds(labelIds)
+                .setQ(q)
+                .setMaxResults(maxResults)
+                .execute();
+        List<Message> messages = openMessages.getMessages();
+        if (messages != null) {
+            for (Message message : messages) {
+                getAttachments(ME, message.getId());
+            }
+        }
+    }
+
+    public static Map<String, String> getEmail(String q, long maxResults, boolean downloadAttachments) throws GeneralSecurityException, IOException, MessagingException {
+        JSONObject ticketDetails = new JSONObject();
+        ListMessagesResponse openMessages = service.
+                users()
+                .messages()
+                .list(ME)
                 .setQ(q)                          // Фильтр - "is:unread label:inbox"   "label:inbox label:closed"  "label:inbox label:pending"
                 .setMaxResults(maxResults)
                 .execute();
@@ -90,14 +113,14 @@ public class GMailService {
         JSONArray openTickets = new JSONArray();
         if (messages != null) {
             for (Message message : messages) {
-                openTickets.add(new JSONObject(getBareGmailMessageDetails(message.getId(), service)));
+                openTickets.add(new JSONObject(getBareGmailMessageDetails(message.getId(), downloadAttachments)));
             }
             ticketDetails.put("openTicketDetails", openTickets);
         }
         return ticketDetails;
     }
 
-    private static Map getBareGmailMessageDetails(String messageId, Gmail service) throws MessagingException, GeneralSecurityException {
+    private static Map getBareGmailMessageDetails(String messageId, boolean downloadAttachments) throws MessagingException {
         Map<String, Object> messageDetails = new HashMap<>();
         try {
             Message message = service.users().messages().get(ME, messageId).setFormat("full")
@@ -114,7 +137,9 @@ public class GMailService {
             messageDetails.put("threadId", message.getThreadId());
             messageDetails.put("id", message.getId());
             messageDetails.put("body", getMailBody(message));
-            getAttachments(service, ME, messageId);
+            if (downloadAttachments) {
+                getAttachments(ME, messageId);
+            }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -146,7 +171,7 @@ public class GMailService {
         return "";
     }
 
-    private static void getAttachments(Gmail service, String userId, String messageId)
+    private static void getAttachments(String userId, String messageId)
             throws IOException {
         Message message = service.users().messages().get(userId, messageId).execute();
         List<MessagePart> parts = message.getPayload().getParts();
@@ -156,26 +181,24 @@ public class GMailService {
                 String attId = part.getBody().getAttachmentId();
                 MessagePartBody attachPart = service.users().messages().attachments().
                         get(userId, messageId, attId).execute();
-
                 Base64 base64Url = new Base64(true);
                 byte[] fileByteArray = base64Url.decodeBase64(attachPart.getData());
                 FileOutputStream fileOutFile =
-                        new FileOutputStream("E:\\Java\\JavaProgs\\xmlHandler\\src\\main\\resources\\" + filename);
+//                        new FileOutputStream("E:\\Java\\JavaProgs\\xmlHandler\\src\\main\\resources\\" + filename);
+                        new FileOutputStream(ATTACHMENTS_DIR_PATH + filename);
                 fileOutFile.write(fileByteArray);
                 fileOutFile.close();
             }
         }
     }
 
-
     private static byte[] decodeData(String data) {
         org.apache.commons.codec.binary.Base64 base64Url = new Base64(true);
         return base64Url.decodeBase64(data);
     }
 
-    private static List<String> getLabelIds(List<GMailLabels> gLabels) throws GeneralSecurityException, IOException {
+    private static List<String> getLabelIds(List<GMailLabels> gLabels) throws IOException {
         List<String> labelsResult = new ArrayList<>();
-        Gmail service = getGMailService();
         ListLabelsResponse response = service.users().labels().list(ME).execute();
         List<Label> labels = (List<Label>) response.get("labels");
         for (GMailLabels gLabel : gLabels) {

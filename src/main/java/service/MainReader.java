@@ -62,7 +62,7 @@ public class MainReader {
 
         List<BerivdoroguProducts> updatedBdProducts = updateBdProducts(suplearPriceLists, bdPriceList);
         disablingItems(bdPriceList, priceProcessing);
-        printBdCsv(updatedBdProducts);
+        printBdCsv(updatedBdProducts, priceProcessing);
         printMissingProduct(missProdMap);
         System.out.println("Read success!");
 
@@ -99,7 +99,18 @@ public class MainReader {
                         if (price.getRetailPrice().compareTo(myProd.getRetailPrice()) != 0 && !Objects.equals(price.getRetailPrice(), BigDecimal.ZERO)) {
                             myProd.setOldRetailPrice(myProd.getRetailPrice());
                             myProd.setRetailPrice(price.getRetailPrice());
+                            if (!myProd.isStatus()) {
+                                myProd.setOldStatus(false);
+                            }
                             myProd.setStatus(true);
+                            myProd.setQuantity(20);
+                        }
+                        if (price.getRetailPrice().compareTo(myProd.getRetailPrice()) == 0 && !myProd.isStatus()) {
+                            myProd.setOldStatus(false);
+                            myProd.setStatus(true);
+                            myProd.setQuantity(20);
+                        }
+                        if (price.getRetailPrice().compareTo(myProd.getRetailPrice()) == 0 && myProd.isStatus() && myProd.getQuantity() == 0) {
                             myProd.setQuantity(20);
                         }
                         myProd.setPresentInPrice(true);
@@ -119,7 +130,7 @@ public class MainReader {
         }
     }
 
-    private void printBdCsv(List<BerivdoroguProducts> bdProducts) throws IOException {
+    private void printBdCsv(List<BerivdoroguProducts> bdProducts, List<String> priceProcessing) throws IOException {
         String currentDate = String.valueOf(new Date().getTime());
 //        File file = new File("C:\\Users\\Admin\\Downloads\\product_import_" + currentDate + ".csv");
         String file = new File("product_import_" + currentDate + ".csv").getAbsolutePath();
@@ -127,10 +138,17 @@ public class MainReader {
         FileWriter outputfile = new FileWriter(file);
         CSVWriter writer = new CSVWriter(outputfile, ';', '"');
 //        String[] header = { "_CATEGORY_", "_NAME_", "_MODEL_", "_SKU_", "_MANUFACTURER_", "_PRICE_", "_QUANTITY_", "_META_TITLE_", "_META_DESCRIPTION_", "_DESCRIPTION_", "_IMAGE_", "_SORT_ORDER_",	"_STATUS_",	"_SEO_KEYWORD_", "_ATTRIBUTES_", "_IMAGES_" };
-        String[] header = {"_NAME_", "_MODEL_", "_SKU_", "_PRICE_", "_QUANTITY_", "_STATUS_"};
+        String[] header = {"_NAME_", "_MODEL_", "_SKU_", "_PRICE_", "_QUANTITY_", "_STATUS_", "old_price", "change_status"};
         writer.writeNext(header);
         for (BerivdoroguProducts bdProduct : bdProducts) {
-            String[] data = {bdProduct.getProductName(), bdProduct.getModel(), bdProduct.getSKU(), roundBigDec(bdProduct.getRetailPrice()), String.valueOf(bdProduct.getQuantity()), String.valueOf(bdProduct.isStatus() ? 1 : 0), String.valueOf(bdProduct.getOldRetailPrice() != null ? 1 : 0)};
+            if (!priceProcessing.contains(bdProduct.getModel().substring(0, 2))) {
+                continue;
+            }
+            String[] data = {bdProduct.getProductName(), bdProduct.getModel(), bdProduct.getSKU(),
+                    roundBigDec(bdProduct.getRetailPrice()), String.valueOf(bdProduct.getQuantity()),
+                    String.valueOf(bdProduct.isStatus() ? 1 : 0),
+                    String.valueOf(bdProduct.getOldRetailPrice() != null ? bdProduct.getOldRetailPrice() : ""),
+                    String.valueOf(bdProduct.isOldStatus() != null ? (bdProduct.isOldStatus() ? 1 : 0) : "")};
             writer.writeNext(data);
         }
         writer.close();

@@ -42,6 +42,7 @@ public class PriceUpdaterController implements Initializable {
     public void fileChooser(ActionEvent event) {
         final FileChooser fileChooser = new FileChooser();
         String status = "";
+        statusLbl.setText(status);
         if (event.getSource() instanceof Button) {
             Button btn = (Button) event.getSource();
             if (btn.getId().equals("berivdoroguBtn")) {

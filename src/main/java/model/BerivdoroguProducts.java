@@ -19,6 +19,8 @@ public class BerivdoroguProducts extends PriceImpl implements Price {
     private String images;
 
     private BigDecimal oldRetailPrice;
+    private Boolean oldStatus;
+    private int oldQuantity;
     private boolean presentInPrice = false;
 
     public String getBdCategory() {
@@ -131,6 +133,22 @@ public class BerivdoroguProducts extends PriceImpl implements Price {
 
     public void setOldRetailPrice(BigDecimal oldRetailPrice) {
         this.oldRetailPrice = oldRetailPrice;
+    }
+
+    public Boolean isOldStatus() {
+        return oldStatus;
+    }
+
+    public void setOldStatus(Boolean oldStatus) {
+        this.oldStatus = oldStatus;
+    }
+
+    public int getOldQuantity() {
+        return oldQuantity;
+    }
+
+    public void setOldQuantity(int oldQuantity) {
+        this.oldQuantity = oldQuantity;
     }
 
     public boolean isPresentInPrice() {

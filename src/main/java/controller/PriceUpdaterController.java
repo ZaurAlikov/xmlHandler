@@ -76,7 +76,7 @@ public class PriceUpdaterController implements Initializable {
                 }
             }
             if (btn.getId().equals("goBtn")) {
-                MainReader reader = new MainReader();
+                MainReader reader = new MainReader(primaryStage);
                 try {
                     reader.read(bdPricePath, atPricePath, edPricePath, esaPricePath);
                     status = "Read success!";

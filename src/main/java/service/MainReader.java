@@ -1,6 +1,8 @@
 package service;
 
 import com.opencsv.CSVWriter;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
 import model.BerivdoroguProducts;
 import model.PriceImpl;
 import model.VendorEnum;
@@ -20,6 +22,12 @@ import java.util.*;
 import static service.PriceReaderHelper.roundBigDec;
 
 public class MainReader {
+
+    private Stage primaryStage;
+
+    public MainReader(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
 
     public void read(String bDPricePath, String aTpricePath, String eDPricePath, List<String> esaPricePath) throws IOException {
 //        String aTpricePath = "/home/user/Загрузки/Прайс туле 3 с 23.07.2019.xlsx";
@@ -62,8 +70,10 @@ public class MainReader {
 
         List<BerivdoroguProducts> updatedBdProducts = updateBdProducts(suplearPriceLists, bdPriceList);
         disablingItems(bdPriceList, priceProcessing);
-        printBdCsv(updatedBdProducts, priceProcessing);
-        printMissingProduct(missProdMap);
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        File file = directoryChooser.showDialog(primaryStage);
+        printBdCsv(updatedBdProducts, priceProcessing, file.getAbsolutePath());
+        printMissingProduct(missProdMap, file.getAbsolutePath());
         System.out.println("Read success!");
 
 //        List<BerivdoroguProducts> bdp = new ArrayList<>();
@@ -130,10 +140,10 @@ public class MainReader {
         }
     }
 
-    private void printBdCsv(List<BerivdoroguProducts> bdProducts, List<String> priceProcessing) throws IOException {
+    private void printBdCsv(List<BerivdoroguProducts> bdProducts, List<String> priceProcessing,  String saveDir) throws IOException {
         String currentDate = String.valueOf(new Date().getTime());
 //        File file = new File("C:\\Users\\Admin\\Downloads\\product_import_" + currentDate + ".csv");
-        String file = new File("product_import_" + currentDate + ".csv").getAbsolutePath();
+        File file = new File(saveDir + File.separator + "product_import_" + currentDate + ".csv");
 //        File file = new File("/berivdorogu/product_import_" + currentDate + ".csv");
         FileWriter outputfile = new FileWriter(file);
         CSVWriter writer = new CSVWriter(outputfile, ';', '"');
@@ -154,7 +164,7 @@ public class MainReader {
         writer.close();
     }
 
-    private void printMissingProduct(Map<VendorEnum, List<PriceImpl>> missingProd) throws IOException {
+    private void printMissingProduct(Map<VendorEnum, List<PriceImpl>> missingProd,  String saveDir) throws IOException {
         XSSFWorkbook book = new XSSFWorkbook();
         for (Map.Entry<VendorEnum, List<PriceImpl>> vendorEnumListEntry : missingProd.entrySet()) {
             XSSFSheet sheet = book.createSheet(vendorEnumListEntry.getKey().getName());
@@ -172,7 +182,7 @@ public class MainReader {
                 ++rowNum;
             }
         }
-        String file = new File("miss_products_" + new Date().getTime() + ".xlsx").getAbsolutePath();
+        File file = new File(saveDir + File.separator + "miss_products_" + new Date().getTime() + ".xlsx");
         book.write(new FileOutputStream(file));
         book.close();
     }

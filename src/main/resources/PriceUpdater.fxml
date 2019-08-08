@@ -1,133 +1,117 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox prefHeight="375.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="controller.PriceUpdaterController">
+
+<VBox prefHeight="375.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.PriceUpdaterController">
     <children>
         <FlowPane prefHeight="40.0" prefWidth="500.0">
             <children>
-                <Button fx:id="berivdoroguBtn" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity"
-                        minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#fileChooser"
-                        prefHeight="25.0" prefWidth="200.0" text="Add Berivdorogu price">
+                <Button fx:id="berivdoroguBtn" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#fileChooser" prefHeight="25.0" prefWidth="200.0" text="Add Berivdorogu price">
                     <opaqueInsets>
-                        <Insets/>
+                        <Insets />
                     </opaqueInsets>
                     <FlowPane.margin>
-                        <Insets bottom="8.0" left="20.0" top="7.0"/>
+                        <Insets bottom="8.0" left="20.0" top="7.0" />
                     </FlowPane.margin>
                 </Button>
             </children>
         </FlowPane>
-        <FlowPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                  prefHeight="25.0" prefWidth="500.0">
+        <FlowPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="500.0">
             <children>
-                <TextField fx:id="berivdoroguTxt" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-                           minWidth="-Infinity" prefHeight="25.0" prefWidth="460.0">
+                <TextField fx:id="berivdoroguTxt" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="460.0">
                     <FlowPane.margin>
-                        <Insets left="20.0"/>
+                        <Insets left="20.0" />
                     </FlowPane.margin>
                 </TextField>
             </children>
         </FlowPane>
-        <FlowPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                  prefHeight="40.0" prefWidth="500.0">
+        <FlowPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="500.0">
             <children>
-                <Button fx:id="atuningBtn" alignment="CENTER" mnemonicParsing="false" onAction="#fileChooser"
-                        prefHeight="25.0" prefWidth="200.0" text="Add A-Tuning price">
+                <Button fx:id="atuningBtn" alignment="CENTER" mnemonicParsing="false" onAction="#fileChooser" prefHeight="25.0" prefWidth="200.0" text="Add A-Tuning price">
                     <opaqueInsets>
-                        <Insets/>
+                        <Insets />
                     </opaqueInsets>
                     <FlowPane.margin>
-                        <Insets bottom="8.0" left="20.0" top="7.0"/>
+                        <Insets bottom="8.0" left="20.0" top="7.0" />
                     </FlowPane.margin>
                 </Button>
             </children>
         </FlowPane>
-        <FlowPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                  prefHeight="25.0" prefWidth="500.0">
+        <FlowPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="500.0">
             <children>
-                <TextField fx:id="atuningTxt" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-                           minWidth="-Infinity" prefHeight="25.0" prefWidth="460.0">
+                <TextField fx:id="atuningTxt" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="460.0">
                     <FlowPane.margin>
-                        <Insets left="20.0"/>
+                        <Insets left="20.0" />
                     </FlowPane.margin>
                 </TextField>
             </children>
             <VBox.margin>
-                <Insets/>
+                <Insets />
             </VBox.margin>
         </FlowPane>
-        <FlowPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                  prefHeight="40.0" prefWidth="500.0">
+        <FlowPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="500.0">
             <children>
-                <Button fx:id="eurodetalBtn" alignment="CENTER" mnemonicParsing="false" onAction="#fileChooser"
-                        prefHeight="25.0" prefWidth="200.0" text="Add Eurodetal price">
+                <Button fx:id="eurodetalBtn" alignment="CENTER" mnemonicParsing="false" onAction="#fileChooser" prefHeight="25.0" prefWidth="200.0" text="Add Eurodetal price">
                     <opaqueInsets>
-                        <Insets/>
+                        <Insets />
                     </opaqueInsets>
                     <FlowPane.margin>
-                        <Insets bottom="8.0" left="20.0" top="7.0"/>
+                        <Insets bottom="8.0" left="20.0" top="7.0" />
                     </FlowPane.margin>
                 </Button>
             </children>
         </FlowPane>
-        <FlowPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                  prefHeight="25.0" prefWidth="500.0">
+        <FlowPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="500.0">
             <children>
-                <TextField fx:id="eurodetalTxt" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-                           minWidth="-Infinity" prefHeight="25.0" prefWidth="460.0">
+                <TextField fx:id="eurodetalTxt" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="460.0">
                     <FlowPane.margin>
-                        <Insets left="20.0"/>
+                        <Insets left="20.0" />
                     </FlowPane.margin>
                 </TextField>
             </children>
         </FlowPane>
-        <FlowPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                  prefHeight="40.0" prefWidth="500.0">
+        <FlowPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="500.0">
             <children>
-                <Button fx:id="esautoBtn" alignment="CENTER" mnemonicParsing="false" onAction="#fileChooser"
-                        prefHeight="25.0" prefWidth="200.0" text="Add ES-Auto price">
+                <Button fx:id="esautoBtn" alignment="CENTER" mnemonicParsing="false" onAction="#fileChooser" prefHeight="25.0" prefWidth="200.0" text="Add ES-Auto price">
                     <opaqueInsets>
-                        <Insets/>
+                        <Insets />
                     </opaqueInsets>
                     <FlowPane.margin>
-                        <Insets bottom="8.0" left="20.0" top="7.0"/>
+                        <Insets bottom="8.0" left="20.0" top="7.0" />
                     </FlowPane.margin>
                 </Button>
             </children>
         </FlowPane>
-        <FlowPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                  prefHeight="80.0" prefWidth="500.0">
+        <FlowPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="80.0" prefWidth="500.0">
             <children>
                 <TextArea fx:id="esAutoTxtArea" prefHeight="80.0" prefWidth="460.0">
                     <FlowPane.margin>
-                        <Insets left="20.0"/>
+                        <Insets left="20.0" />
                     </FlowPane.margin>
                 </TextArea>
             </children>
             <VBox.margin>
-                <Insets/>
+                <Insets />
             </VBox.margin>
         </FlowPane>
-        <FlowPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                  prefHeight="40.0" prefWidth="500.0">
+        <FlowPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="500.0">
             <children>
                 <HBox prefHeight="70.0" prefWidth="500.0">
                     <children>
-                        <Button fx:id="goBtn" alignment="CENTER" mnemonicParsing="false" onAction="#fileChooser"
-                                prefHeight="25.0" prefWidth="200.0" text="Go">
+                        <Button fx:id="goBtn" alignment="CENTER" mnemonicParsing="false" onAction="#fileChooser" prefHeight="25.0" prefWidth="200.0" text="Go">
                             <opaqueInsets>
-                                <Insets/>
+                                <Insets />
                             </opaqueInsets>
                             <HBox.margin>
-                                <Insets left="20.0" top="18.0"/>
+                                <Insets left="20.0" top="18.0" />
                             </HBox.margin>
                         </Button>
                         <Label fx:id="statusLbl" prefHeight="40.0" prefWidth="237.0" wrapText="true">
                             <HBox.margin>
-                                <Insets left="20.0" top="10.0"/>
+                                <Insets left="20.0" top="10.0" />
                             </HBox.margin>
                         </Label>
                     </children>

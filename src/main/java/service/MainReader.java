@@ -38,7 +38,7 @@ public class MainReader {
         List<PriceImpl> atPriceList;
         List<PriceImpl> edPriceList;
         List<String> priceProcessing = new ArrayList<>();
-        Map<VendorEnum, List<PriceImpl>> suplearPriceLists = new HashMap<>();
+        Map<VendorEnum, List<PriceImpl>> supplierPriceLists = new HashMap<>();
         List<PriceImpl> atMissingProducts;
         List<PriceImpl> edMissingProducts;
         Map<VendorEnum, List<PriceImpl>> missProdMap = new HashMap<>();
@@ -54,7 +54,7 @@ public class MainReader {
             ATPriceReader atPriceReader = new ATPriceReader();
             atPriceList = atPriceReader.readPrice(aTpricePath);
             priceProcessing.add(VendorEnum.ATUNING.getCode());
-            suplearPriceLists.put(VendorEnum.ATUNING, atPriceList);
+            supplierPriceLists.put(VendorEnum.ATUNING, atPriceList);
             atMissingProducts = getMissingProducts(VendorEnum.ATUNING, atPriceList, bdPriceList);
             missProdMap.put(VendorEnum.ATUNING, atMissingProducts);
         }
@@ -63,12 +63,12 @@ public class MainReader {
             EDPriceReader edPriceReader = new EDPriceReader();
             edPriceList = edPriceReader.readPrice(eDPricePath);
             priceProcessing.add(VendorEnum.EURODETAL.getCode());
-            suplearPriceLists.put(VendorEnum.EURODETAL, edPriceList);
+            supplierPriceLists.put(VendorEnum.EURODETAL, edPriceList);
             edMissingProducts = getMissingProducts(VendorEnum.EURODETAL, edPriceList, bdPriceList);
             missProdMap.put(VendorEnum.EURODETAL, edMissingProducts);
         }
 
-        List<BerivdoroguProducts> updatedBdProducts = updateBdProducts(suplearPriceLists, bdPriceList);
+        List<BerivdoroguProducts> updatedBdProducts = updateBdProducts(supplierPriceLists, bdPriceList);
         disablingItems(bdPriceList, priceProcessing);
         DirectoryChooser directoryChooser = new DirectoryChooser();
         File file = directoryChooser.showDialog(primaryStage);

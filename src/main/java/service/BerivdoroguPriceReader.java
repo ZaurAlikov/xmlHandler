@@ -46,4 +46,9 @@ public class BerivdoroguPriceReader implements PriceReader {
         }
         return priceList;
     }
+
+    @Override
+    public List<BerivdoroguProducts> readPrice(List<String> filePaths) {
+        return null;
+    }
 }

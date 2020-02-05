@@ -49,4 +49,9 @@ public class EDPriceReader implements PriceReader {
         }
         return eurodetalPrices;
     }
+
+    @Override
+    public List<PriceImpl> readPrice(List<String> filePaths) {
+        return null;
+    }
 }

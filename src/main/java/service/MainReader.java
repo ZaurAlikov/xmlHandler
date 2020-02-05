@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 import model.BerivdoroguProducts;
 import model.PriceImpl;
 import model.VendorEnum;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -37,10 +38,12 @@ public class MainReader {
 //        String BDPricePath = "C:\\Users\\Admin\\Downloads\\product_export_0-1000_2019-07-27-1435.csv";
         List<PriceImpl> atPriceList;
         List<PriceImpl> edPriceList;
+        List<PriceImpl> esaPriceList;
         List<String> priceProcessing = new ArrayList<>();
         Map<VendorEnum, List<PriceImpl>> supplierPriceLists = new HashMap<>();
         List<PriceImpl> atMissingProducts;
         List<PriceImpl> edMissingProducts;
+        List<PriceImpl> esaMissingProducts;
         Map<VendorEnum, List<PriceImpl>> missProdMap = new HashMap<>();
 
         if (StringUtils.isEmpty(bDPricePath)) {
@@ -66,6 +69,15 @@ public class MainReader {
             supplierPriceLists.put(VendorEnum.EURODETAL, edPriceList);
             edMissingProducts = getMissingProducts(VendorEnum.EURODETAL, edPriceList, bdPriceList);
             missProdMap.put(VendorEnum.EURODETAL, edMissingProducts);
+        }
+
+        if (CollectionUtils.isNotEmpty(esaPricePath)) {
+            ESAPriceReader esaPriceReader = new ESAPriceReader();
+            esaPriceList = esaPriceReader.readPrice(esaPricePath);
+            priceProcessing.add(VendorEnum.ESAUTO.getCode());
+            supplierPriceLists.put(VendorEnum.ESAUTO, esaPriceList);
+            esaMissingProducts = getMissingProducts(VendorEnum.ESAUTO, esaPriceList, bdPriceList);
+            missProdMap.put(VendorEnum.ESAUTO, esaMissingProducts);
         }
 
         List<BerivdoroguProducts> updatedBdProducts = updateBdProducts(supplierPriceLists, bdPriceList);

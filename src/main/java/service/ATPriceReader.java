@@ -66,4 +66,9 @@ public class ATPriceReader implements PriceReader {
         myExcelBook.close();
         return aTuningPrices;
     }
+
+    @Override
+    public List<PriceImpl> readPrice(List<String> filePaths) {
+        return null;
+    }
 }

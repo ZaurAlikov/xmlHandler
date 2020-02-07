@@ -1,4 +1,4 @@
-package service;
+package ru.alcotester.pricehandler.service;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -13,7 +13,7 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
 import com.google.api.services.gmail.model.*;
-import model.GMailLabels;
+import ru.alcotester.pricehandler.model.GMailLabels;
 import org.apache.commons.codec.binary.Base64;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -77,7 +77,7 @@ public class GMailService {
     }
 
     private static Gmail getGMailService() throws GeneralSecurityException, IOException {
-        // Build a new authorized API client service.
+        // Build a new authorized API client ru.alcotester.pricehandler.service.
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         return new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
                 .setApplicationName(APPLICATION_NAME)

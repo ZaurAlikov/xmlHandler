@@ -1,4 +1,6 @@
-import controller.PriceUpdaterController;
+package ru.alcotester.pricehandler;
+
+import ru.alcotester.pricehandler.controller.PriceUpdaterController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,7 +13,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("PriceUpdater.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("PriceUpdater.fxml"));
         Parent root = loader.load();
         PriceUpdaterController controller = loader.getController();
         controller.setPrimaryStage(primaryStage);

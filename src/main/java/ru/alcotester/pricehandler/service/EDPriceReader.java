@@ -1,6 +1,6 @@
-package service;
+package ru.alcotester.pricehandler.service;
 
-import model.PriceImpl;
+import ru.alcotester.pricehandler.model.PriceImpl;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static service.PriceReaderHelper.checkCellGetBigDec;
-import static service.PriceReaderHelper.checkCellGetString;
+import static ru.alcotester.pricehandler.service.PriceReaderHelper.checkCellGetBigDec;
+import static ru.alcotester.pricehandler.service.PriceReaderHelper.checkCellGetString;
 
 public class EDPriceReader implements PriceReader {
     @Override

@@ -1,9 +1,9 @@
-package service;
+package ru.alcotester.pricehandler.service;
 
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReaderBuilder;
-import model.BerivdoroguProducts;
+import ru.alcotester.pricehandler.model.BerivdoroguProducts;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.FileReader;

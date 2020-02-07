@@ -1,6 +1,6 @@
-package service;
+package ru.alcotester.pricehandler.service;
 
-import model.PriceImpl;
+import ru.alcotester.pricehandler.model.PriceImpl;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -11,9 +11,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static service.PriceReaderHelper.checkCellGetBigDec;
-import static service.PriceReaderHelper.checkCellGetString;
-import static service.PriceReaderHelper.getColor;
+import static ru.alcotester.pricehandler.service.PriceReaderHelper.checkCellGetBigDec;
+import static ru.alcotester.pricehandler.service.PriceReaderHelper.checkCellGetString;
+import static ru.alcotester.pricehandler.service.PriceReaderHelper.getColor;
 
 public class ATPriceReader implements PriceReader {
 

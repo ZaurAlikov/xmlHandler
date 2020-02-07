@@ -1,11 +1,11 @@
-package service;
+package ru.alcotester.pricehandler.service;
 
 import com.opencsv.CSVWriter;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import model.BerivdoroguProducts;
-import model.PriceImpl;
-import model.VendorEnum;
+import ru.alcotester.pricehandler.model.BerivdoroguProducts;
+import ru.alcotester.pricehandler.model.PriceImpl;
+import ru.alcotester.pricehandler.model.VendorEnum;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
-import static service.PriceReaderHelper.roundBigDec;
+import static ru.alcotester.pricehandler.service.PriceReaderHelper.roundBigDec;
 
 public class MainReader {
 

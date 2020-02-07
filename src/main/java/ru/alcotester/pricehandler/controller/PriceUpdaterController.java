@@ -1,4 +1,4 @@
-package controller;
+package ru.alcotester.pricehandler.controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
@@ -9,7 +9,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.collections.CollectionUtils;
-import service.MainReader;
+import ru.alcotester.pricehandler.service.MainReader;
 
 import java.io.File;
 import java.io.IOException;

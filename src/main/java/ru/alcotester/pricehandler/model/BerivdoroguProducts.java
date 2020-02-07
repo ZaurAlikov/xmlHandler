@@ -1,4 +1,4 @@
-package model;
+package ru.alcotester.pricehandler.model;
 
 import java.math.BigDecimal;
 

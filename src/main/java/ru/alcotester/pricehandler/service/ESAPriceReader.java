@@ -1,6 +1,6 @@
-package service;
+package ru.alcotester.pricehandler.service;
 
-import model.PriceImpl;
+import ru.alcotester.pricehandler.model.PriceImpl;
 
 import java.io.IOException;
 import java.util.List;

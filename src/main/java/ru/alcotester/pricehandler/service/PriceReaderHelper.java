@@ -1,4 +1,4 @@
-package service;
+package ru.alcotester.pricehandler.service;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.ss.usermodel.CellType;

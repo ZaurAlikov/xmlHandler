@@ -1,4 +1,4 @@
-package model;
+package ru.alcotester.pricehandler.model;
 
 public enum GMailLabels {
 

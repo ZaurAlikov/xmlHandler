@@ -48,22 +48,22 @@ public class ATPriceReader implements PriceReader {
         if (rows.size() > 0) {
             for (int i = firstRow; i < rows.size(); i++) {
                 if (i == firstRow) {
-                    category = checkCellGetString(rows.get(i).getCell(0));
+                    category = checkCellGetString(rows.get(i).getCell(5));
                 }
-                if (getColor(rows, i, 0).equals("FBF9EC") && getColor(rows, i+1, 0).equals("FBF9EC")) {
-                    category = checkCellGetString(rows.get(i).getCell(0));
+                if (getColor(rows, i, 5).equals("FBF9EC") && getColor(rows, i+1, 5).equals("FBF9EC")) {
+                    category = checkCellGetString(rows.get(i).getCell(5));
                 }
-                if (getColor(rows, i, 0).equals("FBF9EC") &&
-                        getColor(rows, i+1, 0).equals("") &&
-                        getColor(rows, i-1, 0).equals("")) {
-                    category = checkCellGetString(rows.get(i).getCell(0));
+                if (getColor(rows, i, 5).equals("FBF9EC") &&
+                        getColor(rows, i+1, 5).equals("") &&
+                        getColor(rows, i-1, 5).equals("")) {
+                    category = checkCellGetString(rows.get(i).getCell(5));
                 }
                 if (getColor(rows, i, 0).equals("")) {
                     PriceImpl aTuningPrice = new PriceImpl();
                     aTuningPrice.setProductCategory(category);
                     aTuningPrice.setProductSubCategory(subCategory);
-                    aTuningPrice.setProductName(checkCellGetString(rows.get(i).getCell(0)));
-                    aTuningPrice.setSKU(checkCellGetString(rows.get(i).getCell(12)));
+                    aTuningPrice.setProductName(checkCellGetString(rows.get(i).getCell(5)));
+                    aTuningPrice.setSKU(checkCellGetString(rows.get(i).getCell(0)));
                     aTuningPrice.setRetailPrice(checkCellGetBigDec(rows.get(i).getCell(14)));
                     aTuningPrice.setTradePrice(checkCellGetBigDec(rows.get(i).getCell(15)));
                     aTuningPrices.add(aTuningPrice);

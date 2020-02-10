@@ -82,11 +82,18 @@ public class BerivdoroguPriceReader implements PriceReader {
     }
 
     private BigDecimal getPrice(String strPrice) {
+        BigDecimal result = BigDecimal.ZERO;
         if (StringUtils.isNotEmpty(strPrice)) {
-            return BigDecimal.valueOf(Double.parseDouble(strPrice));
+            try {
+                result = BigDecimal.valueOf(Double.parseDouble(strPrice));
+            } catch (Exception e) {
+                System.err.println("Что-то не так с форматом стоимости");
+                e.getStackTrace();
+            }
+            return result;
         }
-        System.out.println("Что-то не так со стоимостью, есть нулевые значения");
-        return BigDecimal.ZERO;
+        System.err.println("Что-то не так со стоимостью, есть нулевые значения");
+        return result;
     }
 
     @Override

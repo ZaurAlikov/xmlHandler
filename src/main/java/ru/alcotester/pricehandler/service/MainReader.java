@@ -188,9 +188,9 @@ public class MainReader {
                 XSSFCell cell1 = row.createCell(1);
                 cell1.setCellValue(price.getSKU());
                 XSSFCell cell2 = row.createCell(2);
-                cell2.setCellValue(price.getTradePrice().toString());
+                cell2.setCellValue(price.getTradePrice() != null ? price.getTradePrice().toString() : "");
                 XSSFCell cell3 = row.createCell(3);
-                cell3.setCellValue(price.getRetailPrice().toString());
+                cell3.setCellValue(price.getRetailPrice() != null ? price.getRetailPrice().toString() : "");
                 ++rowNum;
             }
         }

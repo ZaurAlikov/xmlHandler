@@ -24,7 +24,7 @@ public class EDPriceReader implements PriceReader {
         String category = "";
         String subCategory = "";
         int firstRow = 7;
-        for (int i = 0; i < myExcelSheet.getLastRowNum(); i++) {
+        for (int i = 0; i <= myExcelSheet.getLastRowNum(); i++) {
             rows.add(myExcelSheet.getRow(i));
         }
         if (rows.size() > 0) {

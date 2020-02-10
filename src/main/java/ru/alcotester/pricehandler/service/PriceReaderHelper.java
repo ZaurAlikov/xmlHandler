@@ -4,6 +4,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFColor;
@@ -15,7 +16,7 @@ import java.util.Objects;
 
 public class PriceReaderHelper {
 
-    static String checkCellGetString(XSSFCell cell) {
+    static String checkCellGetString(Cell cell) {
         if (cell.getCellType() == CellType.STRING) {
             return cell.getStringCellValue();
         }
@@ -25,24 +26,24 @@ public class PriceReaderHelper {
         return "";
     }
 
-    static String checkCellGetString(HSSFCell cell) {
-        if (cell.getCellType() == CellType.STRING) {
-            return cell.getStringCellValue();
-        }
-        if (cell.getCellType() == CellType.NUMERIC) {
-            return String.valueOf(new Double(cell.getNumericCellValue()).intValue());
-        }
-        return "";
-    }
+//    static String checkCellGetString(HSSFCell cell) {
+//        if (cell.getCellType() == CellType.STRING) {
+//            return cell.getStringCellValue();
+//        }
+//        if (cell.getCellType() == CellType.NUMERIC) {
+//            return String.valueOf(new Double(cell.getNumericCellValue()).intValue());
+//        }
+//        return "";
+//    }
 
-    static BigDecimal checkCellGetBigDec(XSSFCell cell) {
-        if (cell.getCellType() == CellType.NUMERIC) {
-            return new BigDecimal(cell.getNumericCellValue());
-        }
-        return BigDecimal.ZERO;
-    }
+//    static BigDecimal checkCellGetBigDec(XSSFCell cell) {
+//        if (cell.getCellType() == CellType.NUMERIC) {
+//            return new BigDecimal(cell.getNumericCellValue());
+//        }
+//        return BigDecimal.ZERO;
+//    }
 
-    static BigDecimal checkCellGetBigDec(HSSFCell cell) {
+    static BigDecimal checkCellGetBigDec(Cell cell) {
         BigDecimal result = BigDecimal.ZERO;
         if (cell.getCellType() == CellType.NUMERIC) {
             return new BigDecimal(cell.getNumericCellValue());
@@ -78,6 +79,23 @@ public class PriceReaderHelper {
         }
         return Objects.equals(color, "000000") ? "" : color;
     }
+
+    static <T> String getCellColor(T cell) {
+        String color = "";
+        if (cell.getClass().equals(HSSFCell.class)) {
+            HSSFColor fillForegroundXSSFColor = ((HSSFCell)cell).getCellStyle().getFillForegroundColorColor();
+            color = getARGBHex(fillForegroundXSSFColor.getHexString());
+        } else if (cell.getClass().equals(XSSFCell.class)) {
+            XSSFColor fillForegroundXSSFColor = ((XSSFCell)cell).getCellStyle().getFillForegroundXSSFColor();
+            if (fillForegroundXSSFColor != null) {
+                color = fillForegroundXSSFColor.getARGBHex().substring(2);
+            }
+        }
+        return Objects.equals(color, "000000") ? "" : color;
+    }
+
+
+
 
     private static String getARGBHex(String hexString) {
         StringBuilder result = new StringBuilder();

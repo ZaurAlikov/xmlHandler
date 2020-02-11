@@ -65,7 +65,9 @@ public class ATPriceReader implements PriceReader {
                     aTuningPrice.setProductName(checkCellGetString(rows.get(i).getCell(5)));
                     aTuningPrice.setSKU(checkCellGetString(rows.get(i).getCell(0)));
                     aTuningPrice.setRetailPrice(checkCellGetBigDec(rows.get(i).getCell(14)));
-                    aTuningPrice.setTradePrice(checkCellGetBigDec(rows.get(i).getCell(15)));
+                    if (rows.get(i).getCell(15) != null) {
+                        aTuningPrice.setTradePrice(checkCellGetBigDec(rows.get(i).getCell(15)));
+                    }
                     aTuningPrices.add(aTuningPrice);
                 }
             }

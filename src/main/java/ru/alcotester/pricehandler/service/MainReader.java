@@ -133,6 +133,7 @@ public class MainReader {
                             myProd.setQuantity(20);
                         }
                         if (price.getRetailPrice().compareTo(myProd.getRetailPrice()) == 0 && myProd.isStatus() && myProd.getQuantity() == 0) {
+                            myProd.setOldQuantity(0);
                             myProd.setQuantity(20);
                         }
                         myProd.setPresentInPrice(true);
@@ -160,7 +161,7 @@ public class MainReader {
         FileWriter outputfile = new FileWriter(file);
         CSVWriter writer = new CSVWriter(outputfile, ';', '"');
 //        String[] header = { "_CATEGORY_", "_NAME_", "_MODEL_", "_SKU_", "_MANUFACTURER_", "_PRICE_", "_QUANTITY_", "_META_TITLE_", "_META_DESCRIPTION_", "_DESCRIPTION_", "_IMAGE_", "_SORT_ORDER_",	"_STATUS_",	"_SEO_KEYWORD_", "_ATTRIBUTES_", "_IMAGES_" };
-        String[] header = {"_NAME_", "_MODEL_", "_SKU_", "_PRICE_", "_QUANTITY_", "_STATUS_", "old_price", "change_status"};
+        String[] header = {"_NAME_", "_MODEL_", "_SKU_", "_PRICE_", "_QUANTITY_", "_STATUS_", "old_price", "old_quantity", "change_status"};
         writer.writeNext(header);
         for (BerivdoroguProducts bdProduct : bdProducts) {
             if (!priceProcessing.contains(bdProduct.getModel().substring(0, 2))) {
@@ -170,7 +171,8 @@ public class MainReader {
                     roundBigDec(bdProduct.getRetailPrice()), String.valueOf(bdProduct.getQuantity()),
                     String.valueOf(bdProduct.isStatus() ? 1 : 0),
                     String.valueOf(bdProduct.getOldRetailPrice() != null ? bdProduct.getOldRetailPrice() : ""),
-                    String.valueOf(bdProduct.isOldStatus() != null ? (bdProduct.isOldStatus() ? 1 : 0) : "")};
+                    String.valueOf(bdProduct.getOldQuantity() != null ? bdProduct.getOldQuantity() : ""),
+                    String.valueOf(bdProduct.getOldStatus() != null ? (bdProduct.getOldStatus() ? 1 : 0) : "")};
             writer.writeNext(data);
         }
         writer.close();

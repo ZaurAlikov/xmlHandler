@@ -7,12 +7,12 @@ public class BerivdoroguProducts extends PriceImpl implements Price {
     private String bdCategory;
     private String model;
     private String manufacturer;
-    private int quantity;
+    private Integer quantity;
     private String metaTitle;
     private String metaDescription;
     private String description;
     private String image;
-    private int sortOrder;
+    private Integer sortOrder;
     private boolean status;
     private String seoKeyword;
     private String atributes;
@@ -20,7 +20,7 @@ public class BerivdoroguProducts extends PriceImpl implements Price {
 
     private BigDecimal oldRetailPrice;
     private Boolean oldStatus;
-    private int oldQuantity;
+    private Integer oldQuantity;
     private boolean presentInPrice = false;
 
     public String getBdCategory() {
@@ -47,11 +47,11 @@ public class BerivdoroguProducts extends PriceImpl implements Price {
         this.manufacturer = manufacturer;
     }
 
-    public int getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 
@@ -87,11 +87,11 @@ public class BerivdoroguProducts extends PriceImpl implements Price {
         this.image = image;
     }
 
-    public int getSortOrder() {
+    public Integer getSortOrder() {
         return sortOrder;
     }
 
-    public void setSortOrder(int sortOrder) {
+    public void setSortOrder(Integer sortOrder) {
         this.sortOrder = sortOrder;
     }
 
@@ -135,7 +135,7 @@ public class BerivdoroguProducts extends PriceImpl implements Price {
         this.oldRetailPrice = oldRetailPrice;
     }
 
-    public Boolean isOldStatus() {
+    public Boolean getOldStatus() {
         return oldStatus;
     }
 
@@ -143,11 +143,11 @@ public class BerivdoroguProducts extends PriceImpl implements Price {
         this.oldStatus = oldStatus;
     }
 
-    public int getOldQuantity() {
+    public Integer getOldQuantity() {
         return oldQuantity;
     }
 
-    public void setOldQuantity(int oldQuantity) {
+    public void setOldQuantity(Integer oldQuantity) {
         this.oldQuantity = oldQuantity;
     }
 

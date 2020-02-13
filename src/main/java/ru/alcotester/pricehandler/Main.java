@@ -7,7 +7,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import javax.mail.MessagingException;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 public class Main extends Application {
 
@@ -23,10 +25,9 @@ public class Main extends Application {
         primaryStage.show();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws GeneralSecurityException, IOException, MessagingException {
+//        Map<String, JSONArray> email = GMailService.getEmail("has:attachment label:Поставщики from:managermsk5@eurotuning-spb.ru filename:(xls pdf)", 10L, false);  //Label_4418826869810109691  inbox
+//        GMailService.downloadAttacmentsOnly("has:attachment label:Поставщики from:managermsk5@eurotuning-spb.ru filename:xls", 10L);
         launch(args);
-//        Map<String, String> email = GMailService.getEmail("has:attachment label:Поставщики filename:pdf", 10L, false); //Label_4418826869810109691  inbox
     }
-
-
 }

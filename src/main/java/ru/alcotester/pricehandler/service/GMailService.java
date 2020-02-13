@@ -100,7 +100,7 @@ public class GMailService {
         }
     }
 
-    public static Map<String, String> getEmail(String q, long maxResults, boolean downloadAttachments) throws GeneralSecurityException, IOException, MessagingException {
+    public static Map<String, JSONArray> getEmail(String q, long maxResults, boolean downloadAttachments) throws GeneralSecurityException, IOException, MessagingException {
         JSONObject ticketDetails = new JSONObject();
         ListMessagesResponse openMessages = service.
                 users()

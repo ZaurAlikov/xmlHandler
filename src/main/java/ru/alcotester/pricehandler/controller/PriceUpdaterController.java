@@ -2,10 +2,7 @@ package ru.alcotester.pricehandler.controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.collections.CollectionUtils;
@@ -28,6 +25,7 @@ public class PriceUpdaterController implements Initializable {
     public Button esautoBtn;
     public TextArea esAutoTxtArea;
     public Button goBtn;
+    public Button emailBtn;
 
     private Stage primaryStage;
     private String bdPricePath;
@@ -39,7 +37,7 @@ public class PriceUpdaterController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
     }
 
-    public void fileChooser(ActionEvent event) {
+    public void fileChooser(ActionEvent event) throws IOException {
         final FileChooser fileChooser = new FileChooser();
         String status = "";
         statusLbl.setText(status);
@@ -90,6 +88,11 @@ public class PriceUpdaterController implements Initializable {
                 } finally {
                     statusLbl.setText(status);
                 }
+            }
+            if (btn.getId().equals("emailBtn")) {
+                EmailWindowController emailWindowController = new EmailWindowController();
+                emailWindowController.setPrimaryStage(primaryStage);
+                emailWindowController.emailWindow();
             }
         }
     }

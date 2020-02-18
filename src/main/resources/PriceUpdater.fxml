@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox prefHeight="375.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.alcotester.pricehandler.controller.PriceUpdaterController">
+<VBox prefHeight="380.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.alcotester.pricehandler.controller.PriceUpdaterController">
     <children>
         <FlowPane prefHeight="40.0" prefWidth="500.0">
             <children>
@@ -97,24 +96,48 @@
                 <Insets />
             </VBox.margin>
         </FlowPane>
-        <FlowPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="500.0">
+        <FlowPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="500.0">
             <children>
-                <HBox prefHeight="70.0" prefWidth="500.0">
+                <HBox prefHeight="65.0" prefWidth="500.0">
                     <children>
-                        <Button fx:id="goBtn" alignment="CENTER" mnemonicParsing="false" onAction="#fileChooser" prefHeight="25.0" prefWidth="200.0" text="Go">
-                            <opaqueInsets>
-                                <Insets />
-                            </opaqueInsets>
-                            <HBox.margin>
-                                <Insets left="20.0" top="18.0" />
-                            </HBox.margin>
+                  <VBox alignment="CENTER_LEFT" prefHeight="65.0" prefWidth="230.0">
+                     <children>
+                              <Button fx:id="goBtn" alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#fileChooser" prefHeight="25.0" prefWidth="200.0" text="Go">
+                                  <opaqueInsets>
+                                      <Insets />
+                                  </opaqueInsets>
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin>
+                              </Button>
+                              <Label fx:id="statusLbl" alignment="CENTER" contentDisplay="TOP" prefHeight="25.0" prefWidth="200.0" wrapText="true">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                              </Label>
+                     </children>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <padding>
+                        <Insets left="20.0" />
+                     </padding>
+                  </VBox>
+                  <VBox prefHeight="65.0" prefWidth="100.0">
+                     <children>
+                        <Button fx:id="emailBtn" alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#fileChooser" prefHeight="25.0" prefWidth="60.0" text="Email">
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                           <VBox.margin>
+                              <Insets top="15.0" />
+                           </VBox.margin>
                         </Button>
-                        <Label fx:id="statusLbl" prefHeight="40.0" prefWidth="237.0" wrapText="true">
-                            <HBox.margin>
-                                <Insets left="20.0" top="10.0" />
-                            </HBox.margin>
-                        </Label>
+                     </children></VBox>
                     </children>
+               <padding>
+                  <Insets top="-5.0" />
+               </padding>
                 </HBox>
             </children>
         </FlowPane>

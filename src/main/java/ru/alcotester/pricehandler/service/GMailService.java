@@ -13,26 +13,32 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
 import com.google.api.services.gmail.model.*;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import ru.alcotester.pricehandler.model.EmailInfo;
 import ru.alcotester.pricehandler.model.GMailLabels;
 import org.apache.commons.codec.binary.Base64;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import java.io.*;
 import java.security.GeneralSecurityException;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class GMailService {
 
+    public static final String ME = "me";
+
+    private static final String MAIL_QUERY = "has:attachment label:Поставщики filename:(xls xlsx)";
     private static final String APPLICATION_NAME = "Gmail API Java Quickstart";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
-    private static final String ME = "me";
     private static final String ATTACHMENTS_DIR_PATH = "/home/user/projects/xmlHandler/src/main/resources/";
+    private static final String MIME_TYPE = "multipart";
 
     /**
      * Global instance of the scopes required by this quickstart.
@@ -84,67 +90,116 @@ public class GMailService {
                 .build();
     }
 
-    public static void downloadAttacmentsOnly(String q, long maxResults) throws IOException {
-        ListMessagesResponse openMessages = service.
-                users()
-                .messages()
-                .list(ME)
-                .setQ(q)
-                .setMaxResults(maxResults)
-                .execute();
-        List<Message> messages = openMessages.getMessages();
-        if (messages != null) {
-            for (Message message : messages) {
-                getAttachments(ME, message.getId());
+//    public static void downloadAttacmentsOnly(String q, long maxResults) throws IOException {
+//        ListMessagesResponse openMessages = service.
+//                users()
+//                .messages()
+//                .list(ME)
+//                .setQ(q)
+//                .setMaxResults(maxResults)
+//                .execute();
+//        List<Message> messages = openMessages.getMessages();
+//        if (messages != null) {
+//            for (Message message : messages) {
+//                downloadAttachments(ME, message.getId());
+//            }
+//        }
+//    }
+
+    private static EmailInfo getEmailInfo(String messageId) throws IOException, ParseException {
+        EmailInfo emailInfo = new EmailInfo();
+        List<MessagePartHeader> headers = new ArrayList<>();
+        Message message = service.users().messages().get(ME, messageId).setFormat("full").setFields("id,payload,sizeEstimate,snippet,threadId").execute();
+        if (message != null) {
+            emailInfo.setId(message.getId());
+            emailInfo.setThreadId(message.getThreadId());
+            emailInfo.setSnippet(message.getSnippet());
+            emailInfo.setMimeType(message.getPayload().getMimeType());
+            emailInfo.setMessageParts(message.getPayload().getParts());
+            headers = message.getPayload().getHeaders();
+        }
+        if (CollectionUtils.isNotEmpty(headers)) {
+            for (MessagePartHeader header : headers) {
+                if (header.getName().equals("From")) {
+                    fillFromNameAndEmail(header.getValue(), emailInfo);
+                }
+                if (header.getName().equals("To")) {
+                    fillToNameAndEmail(header.getValue(), emailInfo);
+                }
+                if (header.getName().equals("Date")) {
+                    emailInfo.setDate(new Date(Date.parse(header.getValue())));
+                }
+                if (header.getName().equals("Subject")) {
+                    emailInfo.setSubject(header.getValue());
+                }
+            }
+        }
+        return emailInfo;
+    }
+
+    private static void fillFromNameAndEmail(String value, EmailInfo emailInfo) {
+        if (StringUtils.isNotEmpty(value)) {
+            String[] split = value.split("\"");
+            if (split.length == 3) {
+                emailInfo.setFromName(split[1]);
+                emailInfo.setFromEmail(split[2].replace("<", "").replace(">", "").trim());
             }
         }
     }
 
-    public static Map<String, JSONArray> getEmail(String q, long maxResults, boolean downloadAttachments) throws GeneralSecurityException, IOException, MessagingException {
-        JSONObject ticketDetails = new JSONObject();
-        ListMessagesResponse openMessages = service.
-                users()
+    private static void fillToNameAndEmail(String value, EmailInfo emailInfo) {
+        if (StringUtils.isNotEmpty(value)) {
+            String[] split = value.split("\"");
+            if (split.length == 3) {
+                emailInfo.setToName(split[1]);
+                emailInfo.setToEmail(split[2].replace("<", "").replace(">", "").trim());
+            }
+        }
+    }
+
+    public static List<EmailInfo> getEmail(String q, long maxResults) throws GeneralSecurityException, IOException, MessagingException, ParseException {
+        List<EmailInfo> emailInfos = new ArrayList<>();
+        ListMessagesResponse openMessages = service
+                .users()
                 .messages()
                 .list(ME)
                 .setQ(q)                          // Фильтр - "is:unread label:inbox"   "label:inbox label:closed"  "label:inbox label:pending"
                 .setMaxResults(maxResults)
                 .execute();
         List<Message> messages = openMessages.getMessages();
-        JSONArray openTickets = new JSONArray();
-        if (messages != null) {
+        if (CollectionUtils.isNotEmpty(messages)) {
             for (Message message : messages) {
-                openTickets.add(new JSONObject(getBareGmailMessageDetails(message.getId(), downloadAttachments)));
+                emailInfos.add(getEmailInfo(message.getId()));
             }
-            ticketDetails.put("openTicketDetails", openTickets);
         }
-        return ticketDetails;
+        return emailInfos;
     }
 
-    private static Map getBareGmailMessageDetails(String messageId, boolean downloadAttachments) throws MessagingException {
-        Map<String, Object> messageDetails = new HashMap<>();
-        try {
-            Message message = service.users().messages().get(ME, messageId).setFormat("full")
-                    .setFields("id,payload,sizeEstimate,snippet,threadId").execute();
-            List<MessagePartHeader> headers = message.getPayload().getHeaders();
-            for (MessagePartHeader header : headers) {
-                if (header.getName().equals("From") || header.getName().equals("Date")
-                        || header.getName().equals("Subject") || header.getName().equals("To")
-                        || header.getName().equals("CC")) {
-                    messageDetails.put(header.getName().toLowerCase(), header.getValue());
-                }
-            }
-            messageDetails.put("snippet", message.getSnippet());
-            messageDetails.put("threadId", message.getThreadId());
-            messageDetails.put("id", message.getId());
-            messageDetails.put("body", getMailBody(message));
-            if (downloadAttachments) {
-                getAttachments(ME, messageId);
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        return messageDetails;
-    }
+//    private static Map getBareGmailMessageDetails(String messageId, boolean downloadAttachments) throws MessagingException {
+//        Map<String, Object> messageDetails = new HashMap<>();
+//        try {
+//            Message message = service.users().messages().get(ME, messageId).setFormat("full")
+//                    .setFields("id,payload,sizeEstimate,snippet,threadId").execute();
+//            List<MessagePartHeader> headers = message.getPayload().getHeaders();
+//            for (MessagePartHeader header : headers) {
+//                if (header.getName().equals("From") || header.getName().equals("Date")
+//                        || header.getName().equals("Subject") || header.getName().equals("To")
+//                        || header.getName().equals("CC")) {
+//                    messageDetails.put(header.getName().toLowerCase(), header.getValue());
+//                }
+//            }
+//            messageDetails.put("snippet", message.getSnippet());
+//            messageDetails.put("threadId", message.getThreadId());
+//            messageDetails.put("id", message.getId());
+//            messageDetails.put("body", getMailBody(message));
+//            if (downloadAttachments) {
+//                downloadAttachments(ME, messageId);
+//            }
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//        }
+//        return messageDetails;
+//    }
 
     private static String getMailBody(Message message) throws MessagingException, IOException {
         byte[] decodedData;
@@ -171,25 +226,49 @@ public class GMailService {
         return "";
     }
 
-    private static void getAttachments(String userId, String messageId)
-            throws IOException {
-        Message message = service.users().messages().get(userId, messageId).execute();
-        List<MessagePart> parts = message.getPayload().getParts();
-        for (MessagePart part : parts) {
-            if (part.getFilename() != null && part.getFilename().length() > 0) {
-                String filename = part.getFilename();
-                String attId = part.getBody().getAttachmentId();
-                MessagePartBody attachPart = service.users().messages().attachments().
-                        get(userId, messageId, attId).execute();
-                Base64 base64Url = new Base64(true);
-                byte[] fileByteArray = base64Url.decodeBase64(attachPart.getData());
-                FileOutputStream fileOutFile =
-//                        new FileOutputStream("E:\\Java\\JavaProgs\\xmlHandler\\src\\main\\resources\\" + filename);
-                        new FileOutputStream(ATTACHMENTS_DIR_PATH + filename);
-                fileOutFile.write(fileByteArray);
-                fileOutFile.close();
-            }
+    public static void downloadAttachments(String userId, String messageId, String attId, String filename) {
+        try {
+            MessagePartBody attachPart = service
+                    .users()
+                    .messages()
+                    .attachments()
+                    .get(userId, messageId, attId)
+                    .execute();
+//            Base64 base64Url = new Base64(true);
+            byte[] fileByteArray = Base64.decodeBase64(attachPart.getData());
+            String path = makeFolders();
+            FileOutputStream fileOutFile = new FileOutputStream(path + File.separator + filename);
+            fileOutFile.write(fileByteArray);
+            fileOutFile.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+    }
+
+    private static String makeFolders() {
+        String fileSeparator = System.getProperty("file.separator");
+        String mainPath = System.getProperty("user.dir") + fileSeparator;
+        File folder = new File(mainPath + fileSeparator + "csvPrices");
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
+        Calendar now = Calendar.getInstance();
+        StringBuilder nowDirName = new StringBuilder();
+        DecimalFormat mFormat= new DecimalFormat("00");
+        nowDirName.append(mFormat.format(Double.valueOf(now.get(Calendar.DAY_OF_MONTH))))
+                .append(mFormat.format(Double.valueOf(now.get(Calendar.MONTH)+1)))
+                .append(now.get(Calendar.YEAR))
+                .append("_")
+                .append(mFormat.format(Double.valueOf(now.get(Calendar.HOUR_OF_DAY))))
+                .append(mFormat.format(Double.valueOf(now.get(Calendar.MINUTE))))
+                .append(mFormat.format(Double.valueOf(now.get(Calendar.SECOND))));
+        File result = new File(folder +
+                fileSeparator + nowDirName.toString());
+        if (!result.exists()) {
+            result.mkdir();
+        }
+        return result.getPath();
     }
 
     private static byte[] decodeData(String data) {

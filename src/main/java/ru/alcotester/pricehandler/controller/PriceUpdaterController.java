@@ -26,6 +26,8 @@ public class PriceUpdaterController implements Initializable {
     public TextArea esAutoTxtArea;
     public Button goBtn;
     public Button emailBtn;
+    public Button downloadBDPriceBtn;
+    public Label dlBdStatusLbl;
 
     private Stage primaryStage;
     private String bdPricePath;
@@ -33,14 +35,19 @@ public class PriceUpdaterController implements Initializable {
     private String edPricePath;
     private List<String> esaPricePath = new ArrayList<>();
 
+    private MainReader reader = null;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        reader = new MainReader(primaryStage);
     }
 
     public void fileChooser(ActionEvent event) throws IOException {
         final FileChooser fileChooser = new FileChooser();
         String status = "";
+        String dlBdStatus = "";
         statusLbl.setText(status);
+        dlBdStatusLbl.setText(dlBdStatus);
         if (event.getSource() instanceof Button) {
             Button btn = (Button) event.getSource();
             if (btn.getId().equals("berivdoroguBtn")) {
@@ -74,7 +81,6 @@ public class PriceUpdaterController implements Initializable {
                 }
             }
             if (btn.getId().equals("goBtn")) {
-                MainReader reader = new MainReader(primaryStage);
                 try {
                     reader.read(bdPricePath, atPricePath, edPricePath, esaPricePath);
                     status = "Read success!";
@@ -93,6 +99,11 @@ public class PriceUpdaterController implements Initializable {
                 EmailWindowController emailWindowController = new EmailWindowController();
                 emailWindowController.setPrimaryStage(primaryStage);
                 emailWindowController.emailWindow();
+            }
+            if (btn.getId().equals("downloadBDPriceBtn")) {
+                reader.downloadBDPrice();
+                dlBdStatus = "Download success!";
+                dlBdStatusLbl.setText(dlBdStatus);
             }
         }
     }

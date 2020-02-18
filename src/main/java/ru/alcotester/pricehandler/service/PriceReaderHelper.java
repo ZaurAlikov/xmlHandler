@@ -10,7 +10,10 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 
+import java.io.File;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
@@ -114,6 +117,32 @@ public class PriceReaderHelper {
         return String.valueOf(val.intValue()/10*10);
     }
 
-
+    public static String createFolders(boolean withSubFolder) {
+        String fileSeparator = System.getProperty("file.separator");
+        String mainPath = System.getProperty("user.dir");
+        File folder = new File(mainPath + fileSeparator + "csvPrices");
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
+        if (withSubFolder) {
+            Calendar now = Calendar.getInstance();
+            StringBuilder nowDirName = new StringBuilder();
+            DecimalFormat mFormat= new DecimalFormat("00");
+            nowDirName.append(mFormat.format(Double.valueOf(now.get(Calendar.DAY_OF_MONTH))))
+                    .append(mFormat.format(Double.valueOf(now.get(Calendar.MONTH)+1)))
+                    .append(now.get(Calendar.YEAR))
+                    .append("_")
+                    .append(mFormat.format(Double.valueOf(now.get(Calendar.HOUR_OF_DAY))))
+                    .append(mFormat.format(Double.valueOf(now.get(Calendar.MINUTE))))
+                    .append(mFormat.format(Double.valueOf(now.get(Calendar.SECOND))));
+            File result = new File(folder +
+                    fileSeparator + nowDirName.toString());
+            if (!result.exists()) {
+                result.mkdir();
+            }
+            return result.getPath();
+        }
+        return folder.toString();
+    }
 
 }

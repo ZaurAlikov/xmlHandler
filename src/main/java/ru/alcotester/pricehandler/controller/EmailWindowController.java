@@ -4,7 +4,6 @@ import com.google.api.services.gmail.model.MessagePart;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -19,14 +18,19 @@ import org.apache.commons.lang3.StringUtils;
 import ru.alcotester.pricehandler.model.EmailInfo;
 import ru.alcotester.pricehandler.model.EmailTableModel;
 import ru.alcotester.pricehandler.service.GMailService;
+import ru.alcotester.pricehandler.service.PriceReaderHelper;
 
 import javax.mail.MessagingException;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.ResourceBundle;
 
 public class EmailWindowController implements Initializable {
 
@@ -113,16 +117,16 @@ public class EmailWindowController implements Initializable {
             Button btn = (Button) actionEvent.getSource();
             if (btn.getId().equals("loadPricesBtn")) {
                 List<EmailTableModel> tableModel = emailTableView.getSelectionModel().getSelectedItems();
+                String path = PriceReaderHelper.createFolders(true);
                 for (EmailTableModel emailTableModel : tableModel) {
-                    GMailService.downloadAttachments(GMailService.ME, emailTableModel.getMessageId(), emailTableModel.getAttachmentId(), emailTableModel.getPriceName());
+                    GMailService.downloadAttachments(GMailService.ME, emailTableModel.getMessageId(), emailTableModel.getAttachmentId(), path + File.separator + emailTableModel.getPriceName());
                 }
                 if (CollectionUtils.isNotEmpty(emailTableView.getSelectionModel().getSelectedItems())) {
                     status = "Loading is complete";
                     loadPriceLbl.setText(status);
                     emailTableView.getSelectionModel().clearSelection();
                 } else {
-//                    status = "Nothing selected";
-                    status = System.getProperties().get("user.dir").toString();
+                    status = "Nothing selected";
                     loadPriceLbl.setText(status);
                 }
             }

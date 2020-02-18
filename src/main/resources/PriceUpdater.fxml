@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="380.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.alcotester.pricehandler.controller.PriceUpdaterController">
+<VBox prefHeight="380.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.alcotester.pricehandler.controller.PriceUpdaterController">
     <children>
         <FlowPane prefHeight="40.0" prefWidth="500.0">
             <children>
@@ -123,7 +128,19 @@
                         <Insets left="20.0" />
                      </padding>
                   </VBox>
-                  <VBox prefHeight="65.0" prefWidth="100.0">
+                  <VBox prefHeight="65.0" prefWidth="120.0">
+                     <children>
+                        <Button fx:id="downloadBDPriceBtn" alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#fileChooser" prefHeight="25.0" prefWidth="120.0" text="Download BD price">
+                           <VBox.margin>
+                              <Insets top="15.0" />
+                           </VBox.margin>
+                        </Button>
+                        <Label fx:id="dlBdStatusLbl" alignment="CENTER" contentDisplay="TOP" prefHeight="25.0" prefWidth="120.0" wrapText="true" />
+                     </children>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin></VBox>
+                  <VBox prefHeight="65.0" prefWidth="60.0">
                      <children>
                         <Button fx:id="emailBtn" alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#fileChooser" prefHeight="25.0" prefWidth="60.0" text="Email">
                            <opaqueInsets>
@@ -133,7 +150,10 @@
                               <Insets top="15.0" />
                            </VBox.margin>
                         </Button>
-                     </children></VBox>
+                     </children>
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin></VBox>
                     </children>
                <padding>
                   <Insets top="-5.0" />

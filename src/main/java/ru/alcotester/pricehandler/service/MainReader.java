@@ -18,6 +18,10 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.Authenticator;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.*;
 
 import static ru.alcotester.pricehandler.service.PriceReaderHelper.roundBigDec;
@@ -199,5 +203,21 @@ public class MainReader {
         File file = new File(saveDir + File.separator + "miss_products_" + new Date().getTime() + ".xlsx");
         book.write(new FileOutputStream(file));
         book.close();
+    }
+
+    public void downloadBDPrice() {
+        try {
+            MyAuthenticator.setPasswordAuthentication("admin", "berivdorogu_csv_price");
+            Authenticator.setDefault (new MyAuthenticator ());
+            URL website = new URL("https://berivdorogu.ru/csvprice/csv_price_export.csv");
+            ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+            String path = PriceReaderHelper.createFolders(false);
+            FileOutputStream fos = new FileOutputStream(path + File.separator + "csv_price_export.csv");
+            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+            fos.close();
+            rbc.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

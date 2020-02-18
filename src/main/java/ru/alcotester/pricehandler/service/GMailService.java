@@ -24,7 +24,6 @@ import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import java.io.*;
 import java.security.GeneralSecurityException;
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -236,39 +235,13 @@ public class GMailService {
                     .execute();
 //            Base64 base64Url = new Base64(true);
             byte[] fileByteArray = Base64.decodeBase64(attachPart.getData());
-            String path = makeFolders();
-            FileOutputStream fileOutFile = new FileOutputStream(path + File.separator + filename);
+            FileOutputStream fileOutFile = new FileOutputStream(filename);
             fileOutFile.write(fileByteArray);
             fileOutFile.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-    }
-
-    private static String makeFolders() {
-        String fileSeparator = System.getProperty("file.separator");
-        String mainPath = System.getProperty("user.dir") + fileSeparator;
-        File folder = new File(mainPath + fileSeparator + "csvPrices");
-        if (!folder.exists()) {
-            folder.mkdir();
-        }
-        Calendar now = Calendar.getInstance();
-        StringBuilder nowDirName = new StringBuilder();
-        DecimalFormat mFormat= new DecimalFormat("00");
-        nowDirName.append(mFormat.format(Double.valueOf(now.get(Calendar.DAY_OF_MONTH))))
-                .append(mFormat.format(Double.valueOf(now.get(Calendar.MONTH)+1)))
-                .append(now.get(Calendar.YEAR))
-                .append("_")
-                .append(mFormat.format(Double.valueOf(now.get(Calendar.HOUR_OF_DAY))))
-                .append(mFormat.format(Double.valueOf(now.get(Calendar.MINUTE))))
-                .append(mFormat.format(Double.valueOf(now.get(Calendar.SECOND))));
-        File result = new File(folder +
-                fileSeparator + nowDirName.toString());
-        if (!result.exists()) {
-            result.mkdir();
-        }
-        return result.getPath();
     }
 
     private static byte[] decodeData(String data) {

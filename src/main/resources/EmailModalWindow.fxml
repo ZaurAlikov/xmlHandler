@@ -5,10 +5,36 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="330.0" prefWidth="752.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.alcotester.pricehandler.controller.EmailWindowController">
+<AnchorPane prefHeight="400.0" prefWidth="752.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.alcotester.pricehandler.controller.EmailWindowController">
    <children>
-      <VBox prefHeight="350.0">
+      <VBox prefHeight="420.0">
          <children>
+            <HBox prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Label alignment="CENTER" contentDisplay="TOP" prefWidth="195.0" text="По дате (нижняя граница)">
+                     <HBox.margin>
+                        <Insets left="77.0" top="10.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+            </HBox>
+            <HBox prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Label prefHeight="26.0" text="Фильтр:">
+                     <HBox.margin>
+                        <Insets left="10.0" top="10.0" />
+                     </HBox.margin>
+                  </Label>
+                  <DatePicker>
+                     <HBox.margin>
+                        <Insets left="10.0" top="10.0" />
+                     </HBox.margin>
+                  </DatePicker>
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </HBox>
             <TableView fx:id="emailTableView">
               <columns>
                 <TableColumn fx:id="colDate" prefWidth="80.0" text="Дата" />
@@ -27,7 +53,10 @@
                   <VBox alignment="CENTER" prefHeight="200.0" prefWidth="500.0">
                      <children>
                         <Button fx:id="loadPricesBtn" mnemonicParsing="false" onAction="#loadPrices" text="Load Prices" />
-                        <Label fx:id="loadPriceLbl" alignment="CENTER" contentDisplay="CENTER" prefWidth="500.0" />
+                        <Label fx:id="loadPriceLbl" alignment="CENTER" contentDisplay="CENTER" prefWidth="500.0">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin></Label>
                      </children>
                   </VBox>
                </children>

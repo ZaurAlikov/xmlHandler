@@ -30,7 +30,7 @@ import java.util.ResourceBundle;
 
 public class EmailWindowController implements Initializable {
 
-    private static final String MAIL_QUERY = "has:attachment label:Поставщики {filename:xls filename:xlsx} after:2020/01/01"; /*from:Мадатова Светлана*/
+    private static final String MAIL_QUERY = "has:attachment label:Поставщики {filename:xls filename:xlsx} after:2020/01/01 from:autobud"; /*from:Мадатова Светлана*/
     private static final String A_TUNING = "eurotuning-spb";
     private static final String ES_AUTO = "autobud";
     private static final String EVRODETAL = "evrodetal";

@@ -24,19 +24,31 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
 public class EmailWindowController implements Initializable {
 
-    private static final String MAIL_QUERY = "has:attachment label:Поставщики {filename:xls filename:xlsx} after:2020/01/01 from:autobud"; /*from:Мадатова Светлана*/
+
+    private String mail_query = "";
+    private String datePartQuery = "";
+    private String labelPartQuery = "";
+    private String fromPartQuery = "";
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
     private static final String A_TUNING = "eurotuning-spb";
     private static final String ES_AUTO = "autobud";
     private static final String EVRODETAL = "evrodetal";
 
+    public Button applyBtn;
     public Button loadPricesBtn;
     public Label loadPriceLbl;
+    public DatePicker filterDatePicker;
+    public TextField filterFromTxtFld;
+    public ComboBox<String> filterLabelCmbBox;
     @FXML
     private TableView<EmailTableModel> emailTableView;
     @FXML
@@ -67,12 +79,24 @@ public class EmailWindowController implements Initializable {
         colSupplier.setCellValueFactory(new PropertyValueFactory<>("supplier"));
         colPriceName.setCellValueFactory(new PropertyValueFactory<>("priceName"));
         colDate.setSortType(TableColumn.SortType.ASCENDING);
-        fillEmailList();
         emailTableView.setItems(emailList);
+        filterLabelCmbBox.setItems(FXCollections.observableArrayList(GMailService.getLabelNames()));
+        filterLabelCmbBox.getSelectionModel().select("Поставщики");
+        labelPartQuery = filterLabelCmbBox.getValue();
+        filterLabelCmbBox.valueProperty().addListener((ov, oldValue, newValue) -> labelPartQuery = newValue);
+        Calendar defaultDate = Calendar.getInstance();
+        defaultDate.add(Calendar.DAY_OF_MONTH, -7);
+        filterDatePicker.setValue(LocalDate.of(defaultDate.get(Calendar.YEAR), defaultDate.get(Calendar.MONTH)+1, defaultDate.get(Calendar.DAY_OF_MONTH)));
+        datePartQuery = filterDatePicker.getValue().format(FORMATTER);
+        filterDatePicker.valueProperty().addListener((ov, oldValue, newValue) -> datePartQuery = newValue.format(FORMATTER));
+        filterFromTxtFld.focusedProperty().addListener((observable, oldValue, newValue) -> { if (!newValue) fromPartQuery = filterFromTxtFld.getText(); });
+        constructQuery();
+        fillEmailList();
     }
 
     private void fillEmailList() {
-        List<EmailInfo> emailInfo = GMailService.getEmail(MAIL_QUERY, 100L);
+        emailList.clear();
+        List<EmailInfo> emailInfo = GMailService.getEmail(mail_query, 100L);
         for (EmailInfo info : emailInfo) {
             if (CollectionUtils.isNotEmpty(info.getMessageParts())) {
                 for (MessagePart messagePart : info.getMessageParts()) {
@@ -88,6 +112,18 @@ public class EmailWindowController implements Initializable {
                 }
             }
         }
+    }
+
+    private void constructQuery() {
+        StringBuilder result = new StringBuilder("has:attachment {filename:xls filename:xlsx}")
+                .append(" label:")
+                .append(labelPartQuery)
+                .append(" after:")
+                .append(datePartQuery);
+        if(StringUtils.isNotBlank(fromPartQuery)) {
+            result.append(" from:").append(fromPartQuery);
+        }
+        mail_query = result.toString();
     }
 
     public void emailWindow() throws IOException {
@@ -134,6 +170,16 @@ public class EmailWindowController implements Initializable {
                     status = "Nothing selected";
                     loadPriceLbl.setText(status);
                 }
+            }
+        }
+    }
+
+    public void onFilter(ActionEvent actionEvent) {
+        if (actionEvent.getSource() instanceof Button) {
+            Button btn = (Button) actionEvent.getSource();
+            if (btn.getId().equals("applyBtn")) {
+                constructQuery();
+                fillEmailList();
             }
         }
     }

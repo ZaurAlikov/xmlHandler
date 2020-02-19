@@ -196,6 +196,23 @@ public class GMailService {
         return "";
     }
 
+    public static List<String> getLabelNames() {
+        List<String> labelsResult = new ArrayList<>();
+        ListLabelsResponse response = null;
+        try {
+            response = service.users().labels().list(ME).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        List<Label> labels = (List<Label>) response.get("labels");
+        for (Label gLabel : labels) {
+            if (gLabel.getType().equals("user")) {
+                labelsResult.add(gLabel.getName());
+            }
+        }
+        return labelsResult;
+    }
+
     private static List<String> getLabelIds(List<GMailLabels> gLabels) throws IOException {
         List<String> labelsResult = new ArrayList<>();
         ListLabelsResponse response = service.users().labels().list(ME).execute();

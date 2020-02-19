@@ -13,9 +13,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import java.io.File;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class PriceReaderHelper {
 
@@ -49,7 +47,7 @@ public class PriceReaderHelper {
     static BigDecimal checkCellGetBigDec(Cell cell) {
         BigDecimal result = BigDecimal.ZERO;
         if (cell.getCellType() == CellType.NUMERIC) {
-            return new BigDecimal(cell.getNumericCellValue());
+            return BigDecimal.valueOf(cell.getNumericCellValue());
         }
         if (cell.getCellType() == CellType.STRING) {
             String stringCellValue = cell.getStringCellValue();
@@ -59,7 +57,7 @@ public class PriceReaderHelper {
                     .replace(",", ".");
 
             try {
-                result = new BigDecimal(Double.parseDouble(replace));
+                result = BigDecimal.valueOf(Double.parseDouble(replace));
             } catch (NumberFormatException e) {
                 System.err.println("Значение " + replace + " не может быть преобразованно в BigDecimal");
             }
@@ -97,9 +95,6 @@ public class PriceReaderHelper {
         return Objects.equals(color, "000000") ? "" : color;
     }
 
-
-
-
     private static String getARGBHex(String hexString) {
         StringBuilder result = new StringBuilder();
         String[] split = hexString.split(":");
@@ -113,36 +108,73 @@ public class PriceReaderHelper {
         return result.toString();
     }
 
-    static public String roundBigDec(BigDecimal val) {
+    public static String roundBigDec(BigDecimal val) {
         return String.valueOf(val.intValue()/10*10);
     }
 
-    public static String createFolders(boolean withSubFolder) {
-        String fileSeparator = System.getProperty("file.separator");
+    public static String createPriceFolders() {
+        return createDateNameFolder(createMainPath());
+    }
+
+    public static String createResultFolders() {
+        String mainPath = createMainPath();
+        return createDateNameFolder(checkAndCreateDir(mainPath + File.separator + "result"));
+    }
+
+    public static String createMainPath() {
         String mainPath = System.getProperty("user.dir");
-        File folder = new File(mainPath + fileSeparator + "csvPrices");
+        return checkAndCreateDir(mainPath + File.separator + "csvPrices");
+    }
+
+    public static String bdPricePathExist() {
+        File file = new File(System.getProperty("user.dir") + File.separator + "csvPrices" + File.separator + "csv_price_export.csv");
+        return file.exists() ? file.getPath() : "";
+    }
+
+    public static String checkAndCreateDir(String path) {
+        File folder = new File(path);
         if (!folder.exists()) {
             folder.mkdir();
         }
-        if (withSubFolder) {
-            Calendar now = Calendar.getInstance();
-            StringBuilder nowDirName = new StringBuilder();
-            DecimalFormat mFormat= new DecimalFormat("00");
-            nowDirName.append(mFormat.format(Double.valueOf(now.get(Calendar.DAY_OF_MONTH))))
-                    .append(mFormat.format(Double.valueOf(now.get(Calendar.MONTH)+1)))
-                    .append(now.get(Calendar.YEAR))
-                    .append("_")
-                    .append(mFormat.format(Double.valueOf(now.get(Calendar.HOUR_OF_DAY))))
-                    .append(mFormat.format(Double.valueOf(now.get(Calendar.MINUTE))))
-                    .append(mFormat.format(Double.valueOf(now.get(Calendar.SECOND))));
-            File result = new File(folder +
-                    fileSeparator + nowDirName.toString());
-            if (!result.exists()) {
-                result.mkdir();
+        return folder.getPath();
+    }
+
+    public static String getLastDateFolderName(List<String> pathList) {
+        List<Calendar> dates = new ArrayList<>();
+        for (String path : pathList) {
+            if (path.contains("result")) {
+                continue;
             }
-            return result.getPath();
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(path.substring(0,2)));
+            calendar.set(Calendar.MONTH, Integer.parseInt(path.substring(2,4)) - 1);
+            calendar.set(Calendar.YEAR, Integer.parseInt(path.substring(4,8)));
+            calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(path.substring(9,11)));
+            calendar.set(Calendar.MINUTE, Integer.parseInt(path.substring(11,13)));
+            calendar.set(Calendar.SECOND, Integer.parseInt(path.substring(13,15)));
+            dates.add(calendar);
         }
-        return folder.toString();
+        dates.sort(Calendar::compareTo);
+        Calendar calendar = dates.get(dates.size() - 1);
+        return getDirNameByDate(calendar);
+    }
+
+    private static String createDateNameFolder(String mainPath) {
+        Calendar now = Calendar.getInstance();
+        return checkAndCreateDir(mainPath + File.separator + getDirNameByDate(now));
+    }
+
+    private static String getDirNameByDate(Calendar calendar) {
+        StringBuilder nowDirName = new StringBuilder();
+        DecimalFormat mFormat= new DecimalFormat("00");
+        nowDirName.append(mFormat.format(Double.valueOf(calendar.get(Calendar.DAY_OF_MONTH))))
+                .append(mFormat.format(Double.valueOf(calendar.get(Calendar.MONTH)+1)))
+                .append(calendar.get(Calendar.YEAR))
+                .append("_")
+                .append(mFormat.format(Double.valueOf(calendar.get(Calendar.HOUR_OF_DAY))))
+                .append(mFormat.format(Double.valueOf(calendar.get(Calendar.MINUTE))))
+                .append(mFormat.format(Double.valueOf(calendar.get(Calendar.SECOND))));
+        return nowDirName.toString();
     }
 
 }

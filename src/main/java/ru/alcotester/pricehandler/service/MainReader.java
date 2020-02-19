@@ -1,8 +1,6 @@
 package ru.alcotester.pricehandler.service;
 
 import com.opencsv.CSVWriter;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.Stage;
 import ru.alcotester.pricehandler.model.BerivdoroguProducts;
 import ru.alcotester.pricehandler.model.PriceImpl;
 import ru.alcotester.pricehandler.model.VendorEnum;
@@ -28,18 +26,7 @@ import static ru.alcotester.pricehandler.service.PriceReaderHelper.roundBigDec;
 
 public class MainReader {
 
-    private Stage primaryStage;
-
-    public MainReader(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-    }
-
     public void read(String bDPricePath, String aTpricePath, String eDPricePath, List<String> esaPricePath) throws IOException {
-//        String aTpricePath = "/home/user/Загрузки/Прайс туле 3 с 23.07.2019.xlsx";
-//        String eDPricePath = "/home/user/Загрузки/прайс Евродеталь  с 24 07 2019.xls";
-//        String bDPricePath = "/home/user/Загрузки/product_export_0-1000_2019-07-30-0947.csv";
-//        String ATpricePath = "C:\\Users\\Admin\\Downloads\\Прайс туле 3 с 23.07.2019.xlsx";
-//        String BDPricePath = "C:\\Users\\Admin\\Downloads\\product_export_0-1000_2019-07-27-1435.csv";
         List<PriceImpl> atPriceList;
         List<PriceImpl> edPriceList;
         List<PriceImpl> esaPriceList;
@@ -86,10 +73,9 @@ public class MainReader {
 
         List<BerivdoroguProducts> updatedBdProducts = updateBdProducts(supplierPriceLists, bdPriceList);
         disablingItems(bdPriceList, priceProcessing);
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        File file = directoryChooser.showDialog(primaryStage);
-        printBdCsv(updatedBdProducts, priceProcessing, file.getAbsolutePath());
-        printMissingProduct(missProdMap, file.getAbsolutePath());
+        String resultFolder = PriceReaderHelper.createResultFolders();
+        printBdCsv(updatedBdProducts, priceProcessing, resultFolder);
+        printMissingProduct(missProdMap, resultFolder);
         System.out.println("Read success!");
 
 //        List<BerivdoroguProducts> bdp = new ArrayList<>();
@@ -159,9 +145,7 @@ public class MainReader {
 
     private void printBdCsv(List<BerivdoroguProducts> bdProducts, List<String> priceProcessing,  String saveDir) throws IOException {
         String currentDate = String.valueOf(new Date().getTime());
-//        File file = new File("C:\\Users\\Admin\\Downloads\\product_import_" + currentDate + ".csv");
         File file = new File(saveDir + File.separator + "product_import_" + currentDate + ".csv");
-//        File file = new File("/berivdorogu/product_import_" + currentDate + ".csv");
         FileWriter outputfile = new FileWriter(file);
         CSVWriter writer = new CSVWriter(outputfile, ';', '"');
 //        String[] header = { "_CATEGORY_", "_NAME_", "_MODEL_", "_SKU_", "_MANUFACTURER_", "_PRICE_", "_QUANTITY_", "_META_TITLE_", "_META_DESCRIPTION_", "_DESCRIPTION_", "_IMAGE_", "_SORT_ORDER_",	"_STATUS_",	"_SEO_KEYWORD_", "_ATTRIBUTES_", "_IMAGES_" };
@@ -205,19 +189,15 @@ public class MainReader {
         book.close();
     }
 
-    public void downloadBDPrice() {
-        try {
-            MyAuthenticator.setPasswordAuthentication("admin", "berivdorogu_csv_price");
-            Authenticator.setDefault (new MyAuthenticator ());
-            URL website = new URL("https://berivdorogu.ru/csvprice/csv_price_export.csv");
-            ReadableByteChannel rbc = Channels.newChannel(website.openStream());
-            String path = PriceReaderHelper.createFolders(false);
-            FileOutputStream fos = new FileOutputStream(path + File.separator + "csv_price_export.csv");
-            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-            fos.close();
-            rbc.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void downloadBDPrice() throws IOException {
+        MyAuthenticator.setPasswordAuthentication("admin", "berivdorogu_csv_price");
+        Authenticator.setDefault (new MyAuthenticator ());
+        URL website = new URL("https://berivdorogu.ru/csvprice/csv_price_export.csv");
+        ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+        String path = PriceReaderHelper.createMainPath();
+        FileOutputStream fos = new FileOutputStream(path + File.separator + "csv_price_export.csv");
+        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+        fos.close();
+        rbc.close();
     }
 }

@@ -20,22 +20,20 @@ import ru.alcotester.pricehandler.model.EmailTableModel;
 import ru.alcotester.pricehandler.service.GMailService;
 import ru.alcotester.pricehandler.service.PriceReaderHelper;
 
-import javax.mail.MessagingException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.security.GeneralSecurityException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
 public class EmailWindowController implements Initializable {
 
-//    private static final String MAIL_QUERY = "has:attachment label:Поставщики filename:(xls xlsx)";
-    private static final String MAIL_QUERY = "has:attachment label:Поставщики {filename:xls filename:xlsx} after:2020/01/01 from:Мадатова Светлана";
+    private static final String MAIL_QUERY = "has:attachment label:Поставщики {filename:xls filename:xlsx} after:2020/01/01"; /*from:Мадатова Светлана*/
+    private static final String A_TUNING = "eurotuning-spb";
+    private static final String ES_AUTO = "autobud";
+    private static final String EVRODETAL = "evrodetal";
 
     public Button loadPricesBtn;
     public Label loadPriceLbl;
@@ -47,7 +45,6 @@ public class EmailWindowController implements Initializable {
     private TableColumn<EmailTableModel, String> colSupplier;
     @FXML
     private TableColumn<EmailTableModel, String> colPriceName;
-    private Stage primaryStage;
 
     private ObservableList<EmailTableModel> emailList = FXCollections.observableArrayList();
 
@@ -75,12 +72,7 @@ public class EmailWindowController implements Initializable {
     }
 
     private void fillEmailList() {
-        List<EmailInfo> emailInfo = new ArrayList<>();
-        try {
-            emailInfo = GMailService.getEmail(MAIL_QUERY, 100L);
-        } catch (GeneralSecurityException | IOException | MessagingException | ParseException e) {
-            e.printStackTrace();
-        }
+        List<EmailInfo> emailInfo = GMailService.getEmail(MAIL_QUERY, 100L);
         for (EmailInfo info : emailInfo) {
             if (CollectionUtils.isNotEmpty(info.getMessageParts())) {
                 for (MessagePart messagePart : info.getMessageParts()) {
@@ -117,9 +109,22 @@ public class EmailWindowController implements Initializable {
             Button btn = (Button) actionEvent.getSource();
             if (btn.getId().equals("loadPricesBtn")) {
                 List<EmailTableModel> tableModel = emailTableView.getSelectionModel().getSelectedItems();
-                String path = PriceReaderHelper.createFolders(true);
-                for (EmailTableModel emailTableModel : tableModel) {
-                    GMailService.downloadAttachments(GMailService.ME, emailTableModel.getMessageId(), emailTableModel.getAttachmentId(), path + File.separator + emailTableModel.getPriceName());
+                if (CollectionUtils.isNotEmpty(tableModel)) {
+                    String path = PriceReaderHelper.createPriceFolders();
+                    for (EmailTableModel emailTableModel : tableModel) {
+                        if (emailTableModel.getSupplier().contains(A_TUNING)) {
+                            String aTuningPath = PriceReaderHelper.checkAndCreateDir(path + File.separator + "ATuning");
+                            GMailService.downloadAttachments(GMailService.ME, emailTableModel.getMessageId(), emailTableModel.getAttachmentId(), aTuningPath + File.separator + emailTableModel.getPriceName());
+                        }
+                        if (emailTableModel.getSupplier().contains(ES_AUTO)) {
+                            String eSAutoPath = PriceReaderHelper.checkAndCreateDir(path + File.separator + "ESAuto");
+                            GMailService.downloadAttachments(GMailService.ME, emailTableModel.getMessageId(), emailTableModel.getAttachmentId(), eSAutoPath + File.separator + emailTableModel.getPriceName());
+                        }
+                        if (emailTableModel.getSupplier().contains(EVRODETAL)) {
+                            String evrodetalPath = PriceReaderHelper.checkAndCreateDir(path + File.separator + "Evrodetal");
+                            GMailService.downloadAttachments(GMailService.ME, emailTableModel.getMessageId(), emailTableModel.getAttachmentId(), evrodetalPath + File.separator + emailTableModel.getPriceName());
+                        }
+                    }
                 }
                 if (CollectionUtils.isNotEmpty(emailTableView.getSelectionModel().getSelectedItems())) {
                     status = "Loading is complete";
@@ -131,9 +136,5 @@ public class EmailWindowController implements Initializable {
                 }
             }
         }
-    }
-
-    public void setPrimaryStage(Stage primaryStage) {
-        this.primaryStage = primaryStage;
     }
 }

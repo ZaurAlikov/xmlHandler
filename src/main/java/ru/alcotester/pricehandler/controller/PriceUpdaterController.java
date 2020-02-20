@@ -163,7 +163,6 @@ public class PriceUpdaterController implements Initializable {
                     dlBdStatusLbl.setText(dlBdStatus);
                 }
 
-
             }
             if (btn.getId().equals("bdAutoBtn")) {
                 if (StringUtils.isNotEmpty(PriceReaderHelper.bdPricePathExist())) {

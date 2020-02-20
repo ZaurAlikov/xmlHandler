@@ -11,10 +11,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.net.Authenticator;
 import java.net.URL;
@@ -25,6 +22,8 @@ import java.util.*;
 import static ru.alcotester.pricehandler.service.PriceReaderHelper.roundBigDec;
 
 public class MainReader {
+
+    private static String CONFIG_FILE_PATH = "/config.properties";
 
     public void read(String bDPricePath, String aTpricePath, String eDPricePath, List<String> esaPricePath) throws IOException {
         List<PriceImpl> atPriceList;
@@ -77,13 +76,6 @@ public class MainReader {
         printBdCsv(updatedBdProducts, priceProcessing, resultFolder);
         printMissingProduct(missProdMap, resultFolder);
         System.out.println("Read success!");
-
-//        List<BerivdoroguProducts> bdp = new ArrayList<>();
-//        for (BerivdoroguProducts updatedBdProduct : updatedBdProducts) {
-//            if (updatedBdProduct.getOldRetailPrice() != null) {
-//                bdp.add(updatedBdProduct);
-//            }
-//        }
     }
 
     private List<PriceImpl> getMissingProducts(VendorEnum vendorCode, List<PriceImpl> supplierPriceList, List<BerivdoroguProducts> bdPriceList) {
@@ -114,18 +106,35 @@ public class MainReader {
                             if (!myProd.isStatus()) {
                                 myProd.setOldStatus(false);
                             }
+                            if (myProd.getQuantity() == 0) {
+                                myProd.setOldQuantity(0);
+                            }
                             myProd.setStatus(true);
                             myProd.setQuantity(20);
                         }
-                        if (price.getRetailPrice().compareTo(myProd.getRetailPrice()) == 0 && !myProd.isStatus()) {
-                            myProd.setOldStatus(false);
-                            myProd.setStatus(true);
-                            myProd.setQuantity(20);
+                        if (price.getRetailPrice().compareTo(myProd.getRetailPrice()) == 0 || Objects.equals(price.getRetailPrice(), BigDecimal.ZERO)) {
+                            if (!myProd.isStatus() || myProd.getQuantity() == 0) {
+                                if (!myProd.isStatus()) {
+                                    myProd.setOldStatus(false);
+                                }
+                                if (myProd.getQuantity() == 0) {
+                                    myProd.setOldQuantity(0);
+                                }
+                                myProd.setStatus(true);
+                                myProd.setQuantity(20);
+                            }
                         }
-                        if (price.getRetailPrice().compareTo(myProd.getRetailPrice()) == 0 && myProd.isStatus() && myProd.getQuantity() == 0) {
-                            myProd.setOldQuantity(0);
-                            myProd.setQuantity(20);
-                        }
+
+//                        if (price.getRetailPrice().compareTo(myProd.getRetailPrice()) == 0 && !myProd.isStatus()) {
+//                            myProd.setOldStatus(false);
+//                            myProd.setStatus(true);
+//                            myProd.setQuantity(20);
+//                        }
+//                        if (price.getRetailPrice().compareTo(myProd.getRetailPrice()) == 0 && myProd.isStatus() && myProd.getQuantity() == 0) {
+//                            myProd.setOldQuantity(0);
+//                            myProd.setQuantity(20);
+//                        }
+
                         myProd.setPresentInPrice(true);
                         break;
                     }
@@ -190,7 +199,20 @@ public class MainReader {
     }
 
     public void downloadBDPrice() throws IOException {
-        MyAuthenticator.setPasswordAuthentication("admin", "berivdorogu_csv_price");
+        String login = "";
+        String password = "";
+        try (InputStream in = GMailService.class.getResourceAsStream(CONFIG_FILE_PATH)) {
+            if (in == null) {
+                throw new FileNotFoundException("Resource not found: " + CONFIG_FILE_PATH);
+            }
+            Properties prop = new Properties();
+            prop.load(in);
+            login = prop.getProperty("host_auth.user");
+            password = prop.getProperty("host_auth.password");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        MyAuthenticator.setPasswordAuthentication(login, password);
         Authenticator.setDefault (new MyAuthenticator ());
         URL website = new URL("https://berivdorogu.ru/csvprice/csv_price_export.csv");
         ReadableByteChannel rbc = Channels.newChannel(website.openStream());

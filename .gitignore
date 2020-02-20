@@ -8,3 +8,4 @@ log/
 target/
 
 src/main/resources/credentials.json
+src/main/resources/config.properties

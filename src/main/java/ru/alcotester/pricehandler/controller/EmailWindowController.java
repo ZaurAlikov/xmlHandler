@@ -33,7 +33,6 @@ import java.util.ResourceBundle;
 
 public class EmailWindowController implements Initializable {
 
-
     private String mail_query = "";
     private String datePartQuery = "";
     private String labelPartQuery = "";
@@ -134,6 +133,7 @@ public class EmailWindowController implements Initializable {
         Scene secondScene = new Scene(emailModal);
         dialog.setScene(secondScene);
         dialog.setTitle("Выбор и загрузка прайсов из писем");
+        dialog.setResizable(false);
         dialog.centerOnScreen();
         dialog.showAndWait();
     }

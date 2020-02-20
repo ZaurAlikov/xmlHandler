@@ -42,6 +42,10 @@ public class PriceUpdaterController implements Initializable {
     public Button aTunAutoBtn;
     public Button edvlAutoBtn;
     public Button esaAutoBtn;
+    public Button bdClearBtn;
+    public Button atunClearBtn;
+    public Button edlClearBtn;
+    public Button esaClearBtn;
 
     private Stage primaryStage;
     private String bdPricePath;
@@ -200,6 +204,22 @@ public class PriceUpdaterController implements Initializable {
                 } else {
                     esautoBtn.fire();
                 }
+            }
+            if (btn.getId().equals("bdClearBtn")) {
+                bdPricePath = "";
+                berivdoroguTxt.setText(bdPricePath);
+            }
+            if (btn.getId().equals("atunClearBtn")) {
+                atPricePath = "";
+                atuningTxt.setText(atPricePath);
+            }
+            if (btn.getId().equals("edlClearBtn")) {
+                edPricePath = "";
+                eurodetalTxt.setText(edPricePath);
+            }
+            if (btn.getId().equals("esaClearBtn")) {
+                esaPricePath.clear();
+                esAutoTxtArea.clear();
             }
         }
     }

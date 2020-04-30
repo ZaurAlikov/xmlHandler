@@ -2,6 +2,7 @@ package ru.alcotester.pricehandler.service;
 
 import com.opencsv.CSVWriter;
 import ru.alcotester.pricehandler.model.BerivdoroguProducts;
+import ru.alcotester.pricehandler.model.ColumnMapping;
 import ru.alcotester.pricehandler.model.PriceImpl;
 import ru.alcotester.pricehandler.model.VendorEnum;
 import org.apache.commons.collections4.CollectionUtils;
@@ -19,13 +20,14 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.*;
 
+import static ru.alcotester.pricehandler.service.PriceReaderHelper.getColumnMapping;
 import static ru.alcotester.pricehandler.service.PriceReaderHelper.roundBigDec;
 
 public class MainReader {
 
     private static String CONFIG_FILE_PATH = "/config.properties";
 
-    public void read(String bDPricePath, String aTpricePath, String eDPricePath, List<String> esaPricePath) throws IOException {
+    public void read(String bDPricePath, String aTpricePath, String eDPricePath, List<String> esaPricePath, List<ColumnMapping> columnMappingList) throws IOException {
         List<PriceImpl> atPriceList;
         List<PriceImpl> edPriceList;
         List<PriceImpl> esaPriceList;
@@ -45,7 +47,8 @@ public class MainReader {
 
         if (StringUtils.isNotEmpty(aTpricePath)) {
             ATPriceReader atPriceReader = new ATPriceReader();
-            atPriceList = atPriceReader.readPrice(aTpricePath);
+            ColumnMapping columnMapping = getColumnMapping(VendorEnum.ATUNING, columnMappingList);
+            atPriceList = atPriceReader.readPrice(aTpricePath, columnMapping);
             priceProcessing.add(VendorEnum.ATUNING.getCode());
             supplierPriceLists.put(VendorEnum.ATUNING, atPriceList);
             atMissingProducts = getMissingProducts(VendorEnum.ATUNING, atPriceList, bdPriceList);
@@ -147,6 +150,9 @@ public class MainReader {
     private void disablingItems(List<BerivdoroguProducts> bdPriceList, List<String> priceProcessing) {
         for (BerivdoroguProducts bdProd : bdPriceList) {
             if (priceProcessing.contains(bdProd.getModel().substring(0, 2)) && !bdProd.isPresentInPrice()) {
+                if (bdProd.getQuantity() > 0) {
+                    bdProd.setOldQuantity(bdProd.getQuantity());
+                }
                 bdProd.setQuantity(0);
             }
         }

@@ -7,7 +7,9 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import ru.alcotester.pricehandler.model.ColumnMapping;
 import ru.alcotester.pricehandler.model.ESAPrice;
+import ru.alcotester.pricehandler.model.Price;
 import ru.alcotester.pricehandler.model.PriceImpl;
 
 import java.io.File;
@@ -129,7 +131,9 @@ public class ESAPriceReader implements PriceReader {
         CellType cellType = cell.getCellType();
         if (cellType.equals(CellType.STRING)) {
             return StringUtils.isNotEmpty(cell.getStringCellValue()) && getCellColor(cell).equals("");
-        } else return cellType.equals(CellType.NUMERIC) && getCellColor(cell).equals("");
+        } else {
+            return cellType.equals(CellType.NUMERIC) && getCellColor(cell).equals("");
+        }
     }
 
     private String trimSKU(String sku) {
@@ -138,6 +142,11 @@ public class ESAPriceReader implements PriceReader {
 
     @Override
     public List<PriceImpl> readPrice(String filePath) {
+        return null;
+    }
+
+    @Override
+    public List<? extends Price> readPrice(String filePath, ColumnMapping columnMapping) {
         return null;
     }
 }

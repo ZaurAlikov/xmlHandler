@@ -1,15 +1,23 @@
 package ru.alcotester.pricehandler.controller;
 
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.Parent;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import ru.alcotester.pricehandler.model.ColumnMapping;
+import ru.alcotester.pricehandler.model.VendorEnum;
 import ru.alcotester.pricehandler.service.MainReader;
 import ru.alcotester.pricehandler.service.PriceReaderHelper;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -17,7 +25,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Stream;
+
+import static ru.alcotester.pricehandler.service.PriceReaderHelper.getColumnMapping;
 
 public class PriceUpdaterController implements Initializable {
 
@@ -52,16 +63,31 @@ public class PriceUpdaterController implements Initializable {
     private String atPricePath;
     private String edPricePath;
     private List<String> esaPricePath = new ArrayList<>();
+    private List<ColumnMapping> columnMappingList = new ArrayList<>();
 
     private MainReader reader = null;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         reader = new MainReader();
+        initColumnMapping();
+    }
+
+    private void initColumnMapping() {
+        ColumnMapping columnMapping = new ColumnMapping();
+        columnMapping.setVendor(VendorEnum.ATUNING);
+        columnMapping.setProductName(5);
+        columnMapping.setSku(0);
+        columnMapping.setRetailPrice(null);
+        columnMapping.setTradePrice(null);
+        columnMapping.setUnit(13);
+        columnMapping.setAvailability(14);
+        columnMappingList.add(columnMapping);
     }
 
     public void fileChooser(ActionEvent event) throws IOException {
         final FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File(PriceReaderHelper.createMainPath()));
         String status = "";
         String dlBdStatus = "";
         statusLbl.setText(status);
@@ -135,7 +161,7 @@ public class PriceUpdaterController implements Initializable {
             }
             if (btn.getId().equals("goBtn")) {
                 try {
-                    reader.read(bdPricePath, atPricePath, edPricePath, esaPricePath);
+                    reader.read(bdPricePath, atPricePath, edPricePath, esaPricePath, columnMappingList);
                     status = "Read success!";
                 } catch (IOException e) {
                     status = "Возникли проблемы при чтении/записи файлов";
@@ -220,7 +246,48 @@ public class PriceUpdaterController implements Initializable {
                 esaPricePath.clear();
                 esAutoTxtArea.clear();
             }
+            if (btn.getId().equals("openBtn")) {
+                File file = fileChooser.showOpenDialog(primaryStage);
+                if (file != null) {
+                    Desktop.getDesktop().open(file);
+                }
+            }
+            if (btn.getId().equals("aTuningColMapBtn")) {
+                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ColumnMapping.fxml"));
+                Parent columnMappingModal = loader.load();
+                ColumnMappingController columnMappingController =  loader.getController();
+                ColumnMapping columnMapping = getColumnMapping(VendorEnum.ATUNING, columnMappingList);
+                setColumnMapWindow(columnMappingController, columnMapping);
+                columnMappingController.columnMappingWindow(columnMappingModal);
+                fillColumnMapping(columnMappingController, columnMapping);
+            }
         }
+    }
+
+    private void fillColumnMapping(ColumnMappingController columnMappingController, ColumnMapping columnMapping) {
+        columnMapping.setSku(getFieldValue(columnMappingController.skuFld));
+        columnMapping.setProductName(getFieldValue(columnMappingController.nameFld));
+        columnMapping.setRetailPrice(getFieldValue(columnMappingController.retailPrcFld));
+        columnMapping.setTradePrice(getFieldValue(columnMappingController.tradePrcFld));
+        columnMapping.setUnit(getFieldValue(columnMappingController.unitFld));
+        columnMapping.setAvailability(getFieldValue(columnMappingController.availabilityFld));
+    }
+
+    private Integer getFieldValue(TextField field) {
+        if (StringUtils.isNotBlank(field.getText())) {
+            return Integer.valueOf(field.getText());
+        } else {
+            return null;
+        }
+    }
+
+    private void setColumnMapWindow(ColumnMappingController columnMappingController, ColumnMapping columnMapping) {
+        columnMappingController.skuFld.setText(columnMapping.getSku() != null ? columnMapping.getSku().toString() : null);
+        columnMappingController.nameFld.setText(columnMapping.getProductName() != null ? columnMapping.getProductName().toString() : null);
+        columnMappingController.retailPrcFld.setText(columnMapping.getRetailPrice() != null ? columnMapping.getRetailPrice().toString() : null);
+        columnMappingController.tradePrcFld.setText(columnMapping.getTradePrice() != null ? columnMapping.getTradePrice().toString() : null);
+        columnMappingController.unitFld.setText(columnMapping.getUnit() != null ? columnMapping.getUnit().toString() : null);
+        columnMappingController.availabilityFld.setText(columnMapping.getAvailability() != null ? columnMapping.getAvailability().toString() : null);
     }
 
     private String getLastFolderPath() throws IOException {

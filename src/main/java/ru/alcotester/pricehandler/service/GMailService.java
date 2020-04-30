@@ -157,6 +157,12 @@ public class GMailService {
             if (split.length == 3) {
                 emailInfo.setFromName(split[1]);
                 emailInfo.setFromEmail(split[2].replace("<", "").replace(">", "").trim());
+            } else if (split.length == 1) {
+                String[] split1 = value.split("<");
+                if (split1.length == 2) {
+                    emailInfo.setFromName(split1[0].trim());
+                    emailInfo.setFromEmail(split1[1].replace("<", "").replace(">", "").trim());
+                }
             }
         }
     }

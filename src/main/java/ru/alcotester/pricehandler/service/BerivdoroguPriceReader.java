@@ -5,6 +5,8 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReaderBuilder;
 import ru.alcotester.pricehandler.model.BerivdoroguProducts;
 import org.apache.commons.lang3.StringUtils;
+import ru.alcotester.pricehandler.model.ColumnMapping;
+import ru.alcotester.pricehandler.model.Price;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -98,6 +100,11 @@ public class BerivdoroguPriceReader implements PriceReader {
 
     @Override
     public List<BerivdoroguProducts> readPrice(List<String> filePaths) {
+        return null;
+    }
+
+    @Override
+    public List<? extends Price> readPrice(String filePath, ColumnMapping columnMapping) {
         return null;
     }
 }

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox prefHeight="380.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.alcotester.pricehandler.controller.PriceUpdaterController">
+<VBox prefHeight="380.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.alcotester.pricehandler.controller.PriceUpdaterController">
     <children>
         <FlowPane prefHeight="40.0" prefWidth="600.0">
             <children>
@@ -52,6 +53,11 @@
                   <Insets left="10.0" />
                </FlowPane.margin></Button>
             <Button fx:id="atunClearBtn" mnemonicParsing="false" onAction="#fileChooser" text="х">
+               <FlowPane.margin>
+                  <Insets left="10.0" />
+               </FlowPane.margin>
+            </Button>
+            <Button fx:id="aTuningColMapBtn" mnemonicParsing="false" onAction="#fileChooser" text="Column Mappping">
                <FlowPane.margin>
                   <Insets left="10.0" />
                </FlowPane.margin>
@@ -188,6 +194,18 @@
                      <HBox.margin>
                         <Insets left="10.0" />
                      </HBox.margin></VBox>
+                  <VBox prefHeight="65.0" prefWidth="60.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                     <children>
+                        <Button fx:id="openBtn" mnemonicParsing="false" onAction="#fileChooser" prefHeight="25.0" prefWidth="60.0" text="Open">
+                           <VBox.margin>
+                              <Insets top="15.0" />
+                           </VBox.margin>
+                        </Button>
+                     </children>
+                  </VBox>
                     </children>
                <padding>
                   <Insets top="-5.0" />

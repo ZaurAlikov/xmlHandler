@@ -9,6 +9,8 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import ru.alcotester.pricehandler.model.ColumnMapping;
+import ru.alcotester.pricehandler.model.VendorEnum;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -17,7 +19,10 @@ import java.util.*;
 
 public class PriceReaderHelper {
 
-    static String checkCellGetString(Cell cell) {
+    public static String checkCellGetString(Cell cell) {
+        if (cell == null) {
+            return "";
+        }
         if (cell.getCellType() == CellType.STRING) {
             return cell.getStringCellValue();
         }
@@ -44,7 +49,7 @@ public class PriceReaderHelper {
 //        return BigDecimal.ZERO;
 //    }
 
-    static BigDecimal checkCellGetBigDec(Cell cell) {
+    public static BigDecimal checkCellGetBigDec(Cell cell) {
         BigDecimal result = BigDecimal.ZERO;
         if (cell.getCellType() == CellType.NUMERIC) {
             return BigDecimal.valueOf(cell.getNumericCellValue());
@@ -157,6 +162,10 @@ public class PriceReaderHelper {
         dates.sort(Calendar::compareTo);
         Calendar calendar = dates.get(dates.size() - 1);
         return getDirNameByDate(calendar);
+    }
+
+    public static ColumnMapping getColumnMapping(VendorEnum vendor, List<ColumnMapping> columnMappingList) {
+        return columnMappingList.stream().filter(cm -> vendor == cm.getVendor()).findFirst().orElse(null);
     }
 
     private static String createDateNameFolder(String mainPath) {

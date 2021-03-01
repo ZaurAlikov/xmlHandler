@@ -43,10 +43,30 @@ public class ATPriceReader implements PriceReader {
         List<PriceImpl> aTuningPrices = new ArrayList<>();
         String category = "";
         String subCategory = "";
-        Sheet myExcelSheet = myExcelBook.getSheet("TDSheet");
+        Sheet myExcelSheet = null;
+        int numberOfSheets = myExcelBook.getNumberOfSheets();
+        int notHiddenSheets = 0;
+        int notHiddenSheetIdx = 0;
+        for (int i = 0; i < numberOfSheets; i++) {
+            if (!myExcelBook.isSheetHidden(i)) {
+                ++notHiddenSheets;
+                notHiddenSheetIdx = i;
+            }
+        }
+        if (notHiddenSheets == 1) {
+            myExcelSheet = myExcelBook.getSheetAt(notHiddenSheetIdx);
+        }
+        if (myExcelSheet == null) {
+            myExcelSheet = myExcelBook.getSheet("TDSheet");
+        }
+        if (myExcelSheet == null) {
+            throw new IllegalArgumentException("Не удалось определить на каком листе прайса ATuning находятся данные");
+        }
         List<Row> rows = new ArrayList<>();
         for (int i = 0; i <= myExcelSheet.getLastRowNum(); i++) {
-            rows.add(myExcelSheet.getRow(i));
+            if (myExcelSheet.getRow(i).getPhysicalNumberOfCells() > 0) {
+                rows.add(myExcelSheet.getRow(i));
+            }
         }
         int firstRow = getFirstRow(rows, columnMapping);
         if (rows.size() > 0) {
@@ -78,6 +98,7 @@ public class ATPriceReader implements PriceReader {
                 }
             }
         }
+        cleanPrice(aTuningPrices);
         return aTuningPrices;
     }
 

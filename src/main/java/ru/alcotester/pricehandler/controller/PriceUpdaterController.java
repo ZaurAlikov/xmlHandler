@@ -48,7 +48,6 @@ public class PriceUpdaterController implements Initializable {
     public Button goBtn;
     public Button emailBtn;
     public Button downloadBDPriceBtn;
-    public Label dlBdStatusLbl;
     public Button bdAutoBtn;
     public Button aTunAutoBtn;
     public Button edvlAutoBtn;
@@ -89,9 +88,7 @@ public class PriceUpdaterController implements Initializable {
         final FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(PriceReaderHelper.createMainPath()));
         String status = "";
-        String dlBdStatus = "";
         statusLbl.setText(status);
-        dlBdStatusLbl.setText(dlBdStatus);
         if (event.getSource() instanceof Button) {
             Button btn = (Button) event.getSource();
             if (btn.getId().equals("berivdoroguBtn")) {
@@ -167,8 +164,8 @@ public class PriceUpdaterController implements Initializable {
                     status = "Возникли проблемы при чтении/записи файлов";
                     System.err.println(status);
                     e.printStackTrace();
-                } catch (IllegalArgumentException e) {
-                    status = e.getMessage();
+                } catch (Exception e) {
+                    status = e.toString();
                     e.printStackTrace();
                 } finally {
                     statusLbl.setText(status);
@@ -181,14 +178,13 @@ public class PriceUpdaterController implements Initializable {
             if (btn.getId().equals("downloadBDPriceBtn")) {
                 try {
                     reader.downloadBDPrice();
-                    dlBdStatus = "Download success!";
-                } catch (IOException e) {
-                    dlBdStatus = "Download failed!";
+                    status = "Download success!";
+                } catch (Exception e) {
+                    status = "Download failed! " + e.toString();
                     e.printStackTrace();
                 } finally {
-                    dlBdStatusLbl.setText(dlBdStatus);
+                    statusLbl.setText(status);
                 }
-
             }
             if (btn.getId().equals("bdAutoBtn")) {
                 if (StringUtils.isNotEmpty(PriceReaderHelper.bdPricePathExist())) {

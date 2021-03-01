@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox prefHeight="380.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.alcotester.pricehandler.controller.PriceUpdaterController">
+<VBox prefHeight="380.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.alcotester.pricehandler.controller.PriceUpdaterController">
     <children>
         <FlowPane prefHeight="40.0" prefWidth="600.0">
             <children>
@@ -143,7 +142,7 @@
         </FlowPane>
         <FlowPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="600.0">
             <children>
-                <HBox prefHeight="65.0" prefWidth="600.0">
+                <HBox prefHeight="40.0" prefWidth="600.0">
                     <children>
                   <VBox alignment="CENTER_LEFT" prefHeight="65.0" prefWidth="230.0">
                      <children>
@@ -155,11 +154,6 @@
                               <Insets top="10.0" />
                            </VBox.margin>
                               </Button>
-                              <Label fx:id="statusLbl" alignment="CENTER" contentDisplay="TOP" prefHeight="25.0" prefWidth="200.0" wrapText="true">
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                              </Label>
                      </children>
                      <opaqueInsets>
                         <Insets />
@@ -175,7 +169,6 @@
                               <Insets top="15.0" />
                            </VBox.margin>
                         </Button>
-                        <Label fx:id="dlBdStatusLbl" alignment="CENTER" contentDisplay="TOP" prefHeight="25.0" prefWidth="150.0" wrapText="true" />
                      </children>
                      <HBox.margin>
                         <Insets />
@@ -211,6 +204,11 @@
                   <Insets top="-5.0" />
                </padding>
                 </HBox>
+            <HBox alignment="CENTER" prefHeight="25.0" prefWidth="600.0">
+               <children>
+                  <Label fx:id="statusLbl" prefHeight="25.0" prefWidth="550.0" />
+               </children>
+            </HBox>
             </children>
         </FlowPane>
     </children>

@@ -1,6 +1,7 @@
 package ru.alcotester.pricehandler.service;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.util.HSSFColor;
@@ -10,6 +11,7 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import ru.alcotester.pricehandler.model.ColumnMapping;
+import ru.alcotester.pricehandler.model.PriceImpl;
 import ru.alcotester.pricehandler.model.VendorEnum;
 
 import java.io.File;
@@ -152,11 +154,11 @@ public class PriceReaderHelper {
             }
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(path.substring(0,2)));
-            calendar.set(Calendar.MONTH, Integer.parseInt(path.substring(2,4)) - 1);
-            calendar.set(Calendar.YEAR, Integer.parseInt(path.substring(4,8)));
-            calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(path.substring(9,11)));
-            calendar.set(Calendar.MINUTE, Integer.parseInt(path.substring(11,13)));
-            calendar.set(Calendar.SECOND, Integer.parseInt(path.substring(13,15)));
+            calendar.set(Calendar.MONTH, Integer.parseInt(path.substring(3,5)) - 1);
+            calendar.set(Calendar.YEAR, Integer.parseInt(path.substring(6,10)));
+//            calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(path.substring(9,11)));
+//            calendar.set(Calendar.MINUTE, Integer.parseInt(path.substring(11,13)));
+//            calendar.set(Calendar.SECOND, Integer.parseInt(path.substring(13,15)));
             dates.add(calendar);
         }
         dates.sort(Calendar::compareTo);
@@ -177,13 +179,19 @@ public class PriceReaderHelper {
         StringBuilder nowDirName = new StringBuilder();
         DecimalFormat mFormat= new DecimalFormat("00");
         nowDirName.append(mFormat.format(Double.valueOf(calendar.get(Calendar.DAY_OF_MONTH))))
-                .append(mFormat.format(Double.valueOf(calendar.get(Calendar.MONTH)+1)))
-                .append(calendar.get(Calendar.YEAR))
                 .append("_")
-                .append(mFormat.format(Double.valueOf(calendar.get(Calendar.HOUR_OF_DAY))))
-                .append(mFormat.format(Double.valueOf(calendar.get(Calendar.MINUTE))))
-                .append(mFormat.format(Double.valueOf(calendar.get(Calendar.SECOND))));
+                .append(mFormat.format(Double.valueOf(calendar.get(Calendar.MONTH)+1)))
+                .append("_")
+                .append(calendar.get(Calendar.YEAR));
+//                .append("_")
+//                .append(mFormat.format(Double.valueOf(calendar.get(Calendar.HOUR_OF_DAY))))
+//                .append(mFormat.format(Double.valueOf(calendar.get(Calendar.MINUTE))))
+//                .append(mFormat.format(Double.valueOf(calendar.get(Calendar.SECOND))));
         return nowDirName.toString();
     }
 
+    public static List<PriceImpl> cleanPrice(List<PriceImpl> price) {
+        price.removeIf(p -> StringUtils.isBlank(p.getSKU()) || StringUtils.isBlank(p.getProductName()));
+        return price;
+    };
 }

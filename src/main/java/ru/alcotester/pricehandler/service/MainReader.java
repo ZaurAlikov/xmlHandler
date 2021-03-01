@@ -1,6 +1,7 @@
 package ru.alcotester.pricehandler.service;
 
 import com.opencsv.CSVWriter;
+import org.apache.poi.ss.usermodel.Row;
 import ru.alcotester.pricehandler.model.BerivdoroguProducts;
 import ru.alcotester.pricehandler.model.ColumnMapping;
 import ru.alcotester.pricehandler.model.PriceImpl;
@@ -20,12 +21,11 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.*;
 
-import static ru.alcotester.pricehandler.service.PriceReaderHelper.getColumnMapping;
-import static ru.alcotester.pricehandler.service.PriceReaderHelper.roundBigDec;
+import static ru.alcotester.pricehandler.service.PriceReaderHelper.*;
 
 public class MainReader {
 
-    private static String CONFIG_FILE_PATH = "/config.properties";
+    final private static String CONFIG_FILE_PATH = "/config.properties";
 
     public void read(String bDPricePath, String aTpricePath, String eDPricePath, List<String> esaPricePath, List<ColumnMapping> columnMappingList) throws IOException {
         List<PriceImpl> atPriceList;
@@ -75,9 +75,9 @@ public class MainReader {
 
         List<BerivdoroguProducts> updatedBdProducts = updateBdProducts(supplierPriceLists, bdPriceList);
         disablingItems(bdPriceList, priceProcessing);
-        String resultFolder = PriceReaderHelper.createResultFolders();
+        String resultFolder = createResultFolders();
         printBdCsv(updatedBdProducts, priceProcessing, resultFolder);
-        printMissingProduct(missProdMap, resultFolder);
+        addMissingProduct(missProdMap);
         System.out.println("Read success!");
     }
 
@@ -181,27 +181,109 @@ public class MainReader {
         writer.close();
     }
 
-    private void printMissingProduct(Map<VendorEnum, List<PriceImpl>> missingProd,  String saveDir) throws IOException {
-        XSSFWorkbook book = new XSSFWorkbook();
-        for (Map.Entry<VendorEnum, List<PriceImpl>> vendorEnumListEntry : missingProd.entrySet()) {
-            XSSFSheet sheet = book.createSheet(vendorEnumListEntry.getKey().getName());
-            int rowNum = 0;
-            for (PriceImpl price : vendorEnumListEntry.getValue()) {
-                XSSFRow row = sheet.createRow(rowNum);
-                XSSFCell cell = row.createCell(0);
-                cell.setCellValue(price.getProductName());
-                XSSFCell cell1 = row.createCell(1);
-                cell1.setCellValue(price.getSKU());
-                XSSFCell cell2 = row.createCell(2);
-                cell2.setCellValue(price.getTradePrice() != null ? price.getTradePrice().toString() : "");
-                XSSFCell cell3 = row.createCell(3);
-                cell3.setCellValue(price.getRetailPrice() != null ? price.getRetailPrice().toString() : "");
-                ++rowNum;
+//    private void printMissingProduct(Map<VendorEnum, List<PriceImpl>> missingProd,  String saveDir) throws IOException {
+//        XSSFWorkbook book = new XSSFWorkbook();
+//        for (Map.Entry<VendorEnum, List<PriceImpl>> vendorEnumListEntry : missingProd.entrySet()) {
+//            XSSFSheet sheet = book.createSheet(vendorEnumListEntry.getKey().getName());
+//            int rowNum = 0;
+//            for (PriceImpl price : vendorEnumListEntry.getValue()) {
+//                XSSFRow row = sheet.createRow(rowNum);
+//                XSSFCell cell = row.createCell(0);
+//                cell.setCellValue(price.getProductName());
+//                XSSFCell cell1 = row.createCell(1);
+//                cell1.setCellValue(price.getSKU());
+//                XSSFCell cell2 = row.createCell(2);
+//                cell2.setCellValue(price.getTradePrice() != null ? price.getTradePrice().toString() : "");
+//                XSSFCell cell3 = row.createCell(3);
+//                cell3.setCellValue(price.getRetailPrice() != null ? price.getRetailPrice().toString() : "");
+//                ++rowNum;
+//            }
+//        }
+//        File file = new File(saveDir + File.separator + "miss_products_" + new Date().getTime() + ".xlsx");
+//        book.write(new FileOutputStream(file));
+//        book.close();
+//    }
+
+    private void addMissingProduct(Map<VendorEnum, List<PriceImpl>> missingProd) throws IOException {
+        File file = new File(createMainPath() + File.separator + "miss_products.xlsx");
+        if (!file.exists()) {
+            XSSFWorkbook book = new XSSFWorkbook();
+            for (Map.Entry<VendorEnum, List<PriceImpl>> vendorEnumListEntry : missingProd.entrySet()) {
+                XSSFSheet sheet = book.createSheet(vendorEnumListEntry.getKey().getName());
+                int rowNum = 0;
+                for (PriceImpl price : vendorEnumListEntry.getValue()) {
+                    fillPriceRow(sheet, rowNum, price);
+                    ++rowNum;
+                }
             }
+            book.write(new FileOutputStream(file));
+            book.close();
+        } else {
+            XSSFWorkbook book = new XSSFWorkbook(new FileInputStream(file));
+            for (Map.Entry<VendorEnum, List<PriceImpl>> vendorEnumListEntry : missingProd.entrySet()) {
+                XSSFSheet myExcelSheet = book.getSheet(vendorEnumListEntry.getKey().getName());
+                if (myExcelSheet != null) {
+                    Set<String> skuValues = new HashSet<>();
+                    List<PriceImpl> existingRecords = new ArrayList<>();
+                    List<Row> rows = new ArrayList<>();
+                    for (int i = 0; i <= myExcelSheet.getLastRowNum(); i++) {
+                        rows.add(myExcelSheet.getRow(i));
+                    }
+                    if (rows.size() > 0) {
+                        for (Row row : rows) {
+                            PriceImpl existingRecord = new PriceImpl();
+                            existingRecord.setSKU(checkCellGetString(row.getCell(1)));
+                            existingRecord.setProductName(checkCellGetString(row.getCell(0)));
+                            existingRecords.add(existingRecord);
+                            skuValues.add(checkCellGetString(row.getCell(1)));
+                        }
+                        int rowNum = rows.size();
+                        for (PriceImpl price : vendorEnumListEntry.getValue()) {
+                            if (!skuValues.contains(price.getSKU())) {
+                                fillPriceRow(myExcelSheet, rowNum, price);
+                                ++rowNum;
+                            }
+                            if (skuValues.contains(price.getSKU()) && price.getSKU().equalsIgnoreCase("new")) {
+                                boolean isNoSuchProductName = false;
+                                for (PriceImpl existingRecord : existingRecords) {
+                                    if (existingRecord.getSKU().equalsIgnoreCase("new") && existingRecord.getProductName().equalsIgnoreCase(price.getProductName())) {
+                                        isNoSuchProductName = true;
+                                        break;
+                                    }
+                                }
+                                if (!isNoSuchProductName) {
+                                    fillPriceRow(myExcelSheet, rowNum, price);
+                                    ++rowNum;
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    XSSFSheet sheet = book.createSheet(vendorEnumListEntry.getKey().getName());
+                    int rowNum = 0;
+                    for (PriceImpl price : vendorEnumListEntry.getValue()) {
+                        fillPriceRow(sheet, rowNum, price);
+                        ++rowNum;
+                    }
+                }
+            }
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            book.write(fileOutputStream);
+            fileOutputStream.close();
+            book.close();
         }
-        File file = new File(saveDir + File.separator + "miss_products_" + new Date().getTime() + ".xlsx");
-        book.write(new FileOutputStream(file));
-        book.close();
+    }
+
+    private void fillPriceRow(XSSFSheet myExcelSheet, int rowNum, PriceImpl price) {
+        XSSFRow row = myExcelSheet.createRow(rowNum);
+        XSSFCell cell = row.createCell(0);
+        cell.setCellValue(price.getProductName());
+        XSSFCell cell1 = row.createCell(1);
+        cell1.setCellValue(price.getSKU());
+        XSSFCell cell2 = row.createCell(2);
+        cell2.setCellValue(price.getTradePrice() != null ? price.getTradePrice().toString() : "");
+        XSSFCell cell3 = row.createCell(3);
+        cell3.setCellValue(price.getRetailPrice() != null ? price.getRetailPrice().toString() : "");
     }
 
     public void downloadBDPrice() throws IOException {
@@ -222,7 +304,7 @@ public class MainReader {
         Authenticator.setDefault (new MyAuthenticator ());
         URL website = new URL("https://berivdorogu.ru/csvprice/csv_price_export.csv");
         ReadableByteChannel rbc = Channels.newChannel(website.openStream());
-        String path = PriceReaderHelper.createMainPath();
+        String path = createMainPath();
         FileOutputStream fos = new FileOutputStream(path + File.separator + "csv_price_export.csv");
         fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
         fos.close();
